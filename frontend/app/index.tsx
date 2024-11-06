@@ -1,12 +1,14 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
+import Terminal from "@/components/containers/terminal";
 
 const HomePage = () => {
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Stack.Screen options={{ title: "Home" }} />
-      <Text>HomePage</Text>
+
+      <Terminal wsUrl="ws://10.0.0.100:3000/ws" />
     </View>
   );
 };
