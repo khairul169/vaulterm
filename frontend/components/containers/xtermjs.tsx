@@ -1,10 +1,11 @@
 "use dom";
 
-import React, { CSSProperties, FC, forwardRef, useEffect, useRef } from "react";
+import React, { CSSProperties, forwardRef, useEffect, useRef } from "react";
 import {
   DOMImperativeFactory,
   DOMProps,
   useDOMImperativeHandle,
+  IS_DOM,
 } from "expo/dom";
 import { Terminal as XTerm } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
@@ -18,9 +19,6 @@ type XTermJsProps = {
   style?: CSSProperties;
   wsUrl: string;
 };
-
-// @ts-ignore
-const IS_DOM = typeof ReactNativeWebView !== "undefined";
 
 export interface XTermRef extends DOMImperativeFactory {
   send: (...args: JSONValue[]) => void;
@@ -89,6 +87,15 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     ws.addEventListener("close", onClose);
     xterm.onResize(resizeTerminal);
     window.addEventListener("resize", onResize);
+
+    // Hack: trigger scale update on visibility change
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.width > 0) {
+        fitAddon.fit();
+      }
+    });
+    observer.observe(containerRef.current!);
+
     onLoad?.();
 
     return () => {
@@ -100,6 +107,8 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
       ws.removeEventListener("open", onOpen);
       ws.removeEventListener("close", onClose);
       window.removeEventListener("resize", onResize);
+
+      observer.disconnect();
     };
   }, [wsUrl]);
 

@@ -89,7 +89,7 @@ func (pve *PVEServer) GetAccessTicket() (*PVEAccessTicket, error) {
 }
 
 type PVEInstance struct {
-	Type string
+	Type string // "qemu" | "lxc"
 	Node string
 	VMID string
 }

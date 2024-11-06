@@ -1,32 +1,45 @@
 import React from "react";
 import Terminal from "./terminal";
 import { BASE_WS_URL } from "@/lib/api";
+import VNCViewer from "./vncviewer";
 
 type SSHSessionProps = {
   type: "ssh";
-  options: {
+  params: {
     serverId: string;
   };
 };
 
-type Props = SSHSessionProps;
+type PVESessionProps = {
+  type: "pve";
+  params: {
+    client: "vnc" | "xtermjs";
+    serverId: string;
+  };
+};
 
-const InteractiveSession = ({ type, options }: Props) => {
+export type InteractiveSessionProps = SSHSessionProps | PVESessionProps;
+
+const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
+  const query = new URLSearchParams({
+    ...params,
+  });
+
   switch (type) {
     case "ssh":
-      const params = new URLSearchParams({
-        serverId: options.serverId,
-        token: "token",
-      });
-      return (
-        <Terminal client="xtermjs" wsUrl={`${BASE_WS_URL}/ws/ssh?${params}`} />
+      return <Terminal wsUrl={`${BASE_WS_URL}/ws/ssh?${query}`} />;
+
+    case "pve":
+      const url = `${BASE_WS_URL}/ws/pve?${query}`;
+      return params.client === "vnc" ? (
+        <VNCViewer url={url} />
+      ) : (
+        <Terminal wsUrl={url} />
       );
 
     default:
       throw new Error("Unknown interactive session type");
   }
-
-  return null;
 };
 
 export default InteractiveSession;

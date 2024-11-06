@@ -27,13 +27,13 @@ const Keys = {
 };
 
 type XTermJsProps = {
-  client: "xtermjs";
+  client?: "xtermjs";
   wsUrl: string;
 };
 
 type TerminalProps = ComponentPropsWithoutRef<typeof View> & XTermJsProps;
 
-const Terminal = ({ client, style, ...props }: TerminalProps) => {
+const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
   const xtermRef = React.useRef<XTermRef>(null);
 
   const send = (data: string) => {

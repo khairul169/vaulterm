@@ -22,7 +22,19 @@ type PVEConfig struct {
 	PrivateKeyPassphrase string
 }
 
-func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, access *PVEAccessTicket, instance *PVEInstance, ticket *PVEVNCTicketData) error {
+// https://github.com/proxmox/pve-xtermjs/blob/master/README
+
+func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, instance *PVEInstance) error {
+	access, err := pve.GetAccessTicket()
+	if err != nil {
+		return err
+	}
+
+	ticket, err := pve.GetVNCTicket(access, instance, false)
+	if err != nil {
+		return err
+	}
+
 	url := fmt.Sprintf("wss://%s:%d/api2/json/nodes/%s/%s/%s/vncwebsocket?port=%s&vncticket=%s",
 		pve.HostName, pve.Port, instance.Node, instance.Type, instance.VMID, ticket.Port, url.QueryEscape(ticket.Ticket))
 
@@ -44,8 +56,6 @@ func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, access *PVEAccessTic
 	// Send first ticket line
 	ws.WriteMessage(fastWs.TextMessage, []byte(fmt.Sprintf("%s:%s\n", access.Username, access.Ticket)))
 
-	// https://github.com/proxmox/pve-xtermjs/blob/master/README
-
 	go func() {
 		for {
 			t, msg, err := c.ReadMessage()
@@ -65,9 +75,8 @@ func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, access *PVEAccessTic
 			}
 
 			msg = []byte(fmt.Sprintf("0:%d:%s\n", len(msg), string(msg)))
-			err = ws.WriteMessage(t, msg)
 
-			if err != nil {
+			if err = ws.WriteMessage(t, msg); err != nil {
 				log.Println("Error writing to Proxmox:", err)
 				break
 			}
@@ -85,8 +94,70 @@ func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, access *PVEAccessTic
 			continue
 		}
 
-		err = c.WriteMessage(t, msg)
+		if err = c.WriteMessage(t, msg); err != nil {
+			log.Println("Error writing to client:", err)
+			break
+		}
+	}
+
+	return nil
+}
+
+func (pve *PVEServer) NewVNCSession(c *websocket.Conn, instance *PVEInstance) error {
+	access, err := pve.GetAccessTicket()
+	if err != nil {
+		return err
+	}
+
+	ticket, err := pve.GetVNCTicket(access, instance, true)
+	if err != nil {
+		return err
+	}
+
+	url := fmt.Sprintf("wss://%s:%d/api2/json/nodes/%s/%s/%s/vncwebsocket?port=%s&vncticket=%s",
+		pve.HostName, pve.Port, instance.Node, instance.Type, instance.VMID, ticket.Port, url.QueryEscape(ticket.Ticket))
+
+	headers := http.Header{}
+	headers.Add("Authorization", "PVEAPIToken="+access.Username)
+	headers.Add("Cookie", "PVEAuthCookie="+access.Ticket)
+
+	dialer := fastWs.Dialer{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	ws, _, err := dialer.Dial(url, headers)
+	if err != nil {
+		log.Println("Error connecting to Proxmox WebSocket:", err)
+		return err
+	}
+	defer ws.Close()
+
+	// Send vnc password
+	c.WriteMessage(fastWs.TextMessage, []byte(fmt.Sprintf("\x01%s", ticket.Ticket)))
+
+	go func() {
+		for {
+			t, msg, err := c.ReadMessage()
+			if err != nil {
+				log.Println("Error reading from client:", err)
+				break
+			}
+
+			if err = ws.WriteMessage(t, msg); err != nil {
+				log.Println("Error writing to Proxmox:", err)
+				break
+			}
+		}
+	}()
+
+	for {
+		t, msg, err := ws.ReadMessage()
 		if err != nil {
+			log.Println("Error reading from Proxmox:", err)
+			break
+		}
+
+		if err = c.WriteMessage(t, msg); err != nil {
 			log.Println("Error writing to client:", err)
 			break
 		}
