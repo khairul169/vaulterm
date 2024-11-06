@@ -69,10 +69,13 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     }
 
     function onOpen() {
+      console.log("WS Open");
       resizeTerminal();
     }
 
     function onClose(e: CloseEvent) {
+      console.log("WS Closed", e.reason, e.code);
+
       // Check if the close event was abnormal
       if (!e.wasClean) {
         const reason = e.reason || `Code: ${e.code}`;

@@ -121,10 +121,12 @@ func sshWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Handle WebSocket to SSH data streaming
 	go func() {
+		defer session.Close()
+
 		for {
 			_, msg, err := wsConn.Read(context.Background())
 			if err != nil {
-				return
+				break
 			}
 
 			if strings.HasPrefix(string(msg), "\x01") {
@@ -153,7 +155,7 @@ func sshWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/ws", sshWebSocketHandler)
+	http.HandleFunc("/ws/ssh", sshWebSocketHandler)
 	log.Println("Server started on :3000")
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }
