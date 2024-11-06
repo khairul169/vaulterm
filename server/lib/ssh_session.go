@@ -145,9 +145,10 @@ func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
 					height, _ := strconv.Atoi(parts[1])
 					session.WindowChange(height, width)
 				}
-			} else {
-				stdinPipe.Write(msg)
+				continue
 			}
+
+			stdinPipe.Write(msg)
 		}
 	}()
 
