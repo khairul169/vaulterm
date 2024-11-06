@@ -58,7 +58,9 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
 
     function resizeTerminal() {
       const { cols, rows } = xterm;
-      ws.send(`\x01${cols},${rows}`);
+      if (ws.readyState === ws.OPEN) {
+        ws.send(`\x01${cols},${rows}`);
+      }
     }
 
     function onResize() {

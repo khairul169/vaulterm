@@ -6,37 +6,40 @@ import InteractiveSession, {
 } from "@/components/containers/interactive-session";
 import PagerView from "@/components/ui/pager-view";
 
-let nextSession = 1;
-
 type Session = InteractiveSessionProps & { id: string };
 
 const HomePage = () => {
   const [sessions, setSessions] = useState<Session[]>([
     {
       id: "1",
-      type: "ssh",
-      params: { serverId: "1" },
+      type: "incus",
+      params: { client: "xtermjs", serverId: "1", shell: "bash" },
     },
-    {
-      id: "2",
-      type: "pve",
-      params: { client: "vnc", serverId: "2" },
-    },
-    {
-      id: "3",
-      type: "pve",
-      params: { client: "xtermjs", serverId: "3" },
-    },
+    // {
+    //   id: "1",
+    //   type: "ssh",
+    //   params: { serverId: "1" },
+    // },
+    // {
+    //   id: "2",
+    //   type: "pve",
+    //   params: { client: "vnc", serverId: "2" },
+    // },
+    // {
+    //   id: "3",
+    //   type: "pve",
+    //   params: { client: "xtermjs", serverId: "3" },
+    // },
   ]);
   const [curSession, setSession] = useState(0);
 
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Screen options={{ title: "Home" }} />
+      <Stack.Screen options={{ title: "Home", headerShown: false }} />
 
       <ScrollView
         horizontal
-        style={{ flexGrow: 0 }}
+        style={{ flexGrow: 0, backgroundColor: "#111" }}
         contentContainerStyle={{ flexDirection: "row", gap: 8 }}
       >
         {sessions.map((session, idx) => (
@@ -46,7 +49,7 @@ const HomePage = () => {
           >
             <Button
               title={"Session " + session.id}
-              color="#222"
+              color="#333"
               onPress={() => setSession(idx)}
             />
             <Button

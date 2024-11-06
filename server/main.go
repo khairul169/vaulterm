@@ -14,7 +14,7 @@ func main() {
 	app := fiber.New()
 
 	var pve = &lib.PVEServer{
-		HostName: "pve",
+		HostName: "10.0.0.1",
 		Port:     8006,
 		Username: os.Getenv("PVE_USERNAME"),
 		Password: os.Getenv("PVE_PASSWORD"),
@@ -75,5 +75,19 @@ func main() {
 			c.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
 	}))
+
+	app.Get("/ws/incus", websocket.New(func(c *websocket.Conn) {
+		incus := &lib.IncusServer{
+			HostName:   "100.64.0.3",
+			Port:       8443,
+			ClientCert: "",
+			ClientKey:  "",
+		}
+
+		if err := lib.NewIncusWebsocketSession(c, incus); err != nil {
+			c.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
+	}))
+
 	app.Listen(":3000")
 }
