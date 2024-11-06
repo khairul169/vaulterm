@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React from "react";
 import Terminal from "./terminal";
 import { BASE_WS_URL } from "@/lib/api";
@@ -19,7 +18,9 @@ const InteractiveSession = ({ type, options }: Props) => {
         serverId: options.serverId,
         token: "token",
       });
-      return <Terminal wsUrl={BASE_WS_URL + "/ws/ssh?" + params} />;
+      return (
+        <Terminal client="xtermjs" wsUrl={`${BASE_WS_URL}/ws/ssh?${params}`} />
+      );
 
     default:
       throw new Error("Unknown interactive session type");

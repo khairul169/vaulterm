@@ -26,20 +26,33 @@ const Keys = {
   Tab: "\x09",
 };
 
-type TerminalProps = ComponentPropsWithoutRef<typeof View> & {
+type XTermJsProps = {
+  client: "xtermjs";
   wsUrl: string;
 };
 
-const Terminal = ({ wsUrl, style, ...props }: TerminalProps) => {
-  const ref = React.useRef<XTermRef>(null);
+type TerminalProps = ComponentPropsWithoutRef<typeof View> & XTermJsProps;
+
+const Terminal = ({ client, style, ...props }: TerminalProps) => {
+  const xtermRef = React.useRef<XTermRef>(null);
 
   const send = (data: string) => {
-    ref.current?.send(data);
+    switch (client) {
+      case "xtermjs":
+        xtermRef.current?.send(data);
+        break;
+    }
   };
 
   return (
     <View style={[styles.container, style]} {...props}>
-      <XTermJs ref={ref} dom={{ scrollEnabled: false }} wsUrl={wsUrl} />
+      {client === "xtermjs" && (
+        <XTermJs
+          ref={xtermRef}
+          dom={{ scrollEnabled: false }}
+          wsUrl={props.wsUrl}
+        />
+      )}
 
       <ScrollView
         horizontal
