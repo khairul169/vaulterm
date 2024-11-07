@@ -28,7 +28,7 @@ const Keys = {
 
 type XTermJsProps = {
   client?: "xtermjs";
-  wsUrl: string;
+  url: string;
 };
 
 type TerminalProps = ComponentPropsWithoutRef<typeof View> & XTermJsProps;
@@ -50,7 +50,7 @@ const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
         <XTermJs
           ref={xtermRef}
           dom={{ scrollEnabled: false }}
-          wsUrl={props.wsUrl}
+          wsUrl={props.url}
         />
       )}
 

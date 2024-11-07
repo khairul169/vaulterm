@@ -1,10 +1,19 @@
 package lib
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"fmt"
+	"io"
+	"os"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func LoadClientCertificate(clientCert string, clientKey string) (*tls.Certificate, error) {
@@ -34,4 +43,94 @@ func LoadClientCertificate(clientCert string, clientKey string) (*tls.Certificat
 		Certificate: [][]byte{cert.Raw},
 		PrivateKey:  key,
 	}, nil
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(bytes), err
+}
+
+func VerifyPassword(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func GenerateSessionID(size int) (string, error) {
+	sessionID := make([]byte, size)
+
+	// Read random bytes into sessionID
+	_, err := rand.Read(sessionID)
+	if err != nil {
+		return "", err
+	}
+
+	// Encode as hex string
+	return hex.EncodeToString(sessionID), nil
+}
+
+func Encrypt(data string) (string, error) {
+	key := os.Getenv("ENCRYPTION_KEY")
+	if key == "" {
+		return "", fmt.Errorf("ENCRYPTION_KEY is not set")
+	}
+
+	keyDec, err := hex.DecodeString(key)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher(keyDec)
+	if err != nil {
+		return "", err
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+
+	ciphertext := aesGCM.Seal(nonce, nonce, []byte(data), nil)
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
+}
+
+func Decrypt(encrypted string) (string, error) {
+	key := os.Getenv("ENCRYPTION_KEY")
+	if key == "" {
+		return "", fmt.Errorf("ENCRYPTION_KEY is not set")
+	}
+
+	keyDec, err := hex.DecodeString(key)
+	if err != nil {
+		return "", err
+	}
+
+	data, err := base64.StdEncoding.DecodeString(encrypted)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher(keyDec)
+	if err != nil {
+		return "", err
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonceSize := aesGCM.NonceSize()
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+
+	res, err := aesGCM.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
 }

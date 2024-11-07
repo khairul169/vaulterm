@@ -1,4 +1,4 @@
-package lib
+package ws
 
 import (
 	"crypto/tls"
@@ -11,27 +11,21 @@ import (
 
 	fastWs "github.com/fasthttp/websocket"
 	"github.com/gofiber/contrib/websocket"
+	"rul.sh/vaulterm/lib"
 )
-
-type PVEConfig struct {
-	HostName             string
-	User                 string
-	Password             string
-	Port                 int
-	PrivateKey           string
-	PrivateKeyPassphrase string
-}
 
 // https://github.com/proxmox/pve-xtermjs/blob/master/README
 
-func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, instance *PVEInstance) error {
+func NewTerminalSession(c *websocket.Conn, pve *lib.PVEServer, instance *lib.PVEInstance) error {
 	access, err := pve.GetAccessTicket()
 	if err != nil {
+		log.Println("Error getting access ticket:", err)
 		return err
 	}
 
 	ticket, err := pve.GetVNCTicket(access, instance, false)
 	if err != nil {
+		log.Println("Error getting vnc ticket:", err)
 		return err
 	}
 
@@ -103,14 +97,16 @@ func (pve *PVEServer) NewTerminalSession(c *websocket.Conn, instance *PVEInstanc
 	return nil
 }
 
-func (pve *PVEServer) NewVNCSession(c *websocket.Conn, instance *PVEInstance) error {
+func NewVNCSession(c *websocket.Conn, pve *lib.PVEServer, instance *lib.PVEInstance) error {
 	access, err := pve.GetAccessTicket()
 	if err != nil {
+		log.Println("Error getting access ticket:", err)
 		return err
 	}
 
 	ticket, err := pve.GetVNCTicket(access, instance, true)
 	if err != nil {
+		log.Println("Error getting vnc ticket:", err)
 		return err
 	}
 

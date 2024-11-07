@@ -6,7 +6,7 @@ import VNCViewer from "./vncviewer";
 type SSHSessionProps = {
   type: "ssh";
   params: {
-    serverId: string;
+    hostId: string;
   };
 };
 
@@ -14,7 +14,7 @@ type PVESessionProps = {
   type: "pve";
   params: {
     client: "vnc" | "xtermjs";
-    serverId: string;
+    hostId: string;
   };
 };
 
@@ -22,7 +22,7 @@ type IncusSessionProps = {
   type: "incus";
   params: {
     client: "vnc" | "xtermjs";
-    serverId: string;
+    hostId: string;
     shell?: string;
   };
 };
@@ -33,29 +33,19 @@ export type InteractiveSessionProps =
   | IncusSessionProps;
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
-  let url = "";
-  const query = new URLSearchParams({
-    ...params,
-  });
+  const query = new URLSearchParams(params);
+  const url = `${BASE_WS_URL}/ws/term?${query}`;
 
   switch (type) {
     case "ssh":
-      return <Terminal wsUrl={`${BASE_WS_URL}/ws/ssh?${query}`} />;
+      return <Terminal url={url} />;
 
     case "pve":
-      url = `${BASE_WS_URL}/ws/pve?${query}`;
-      return params.client === "vnc" ? (
-        <VNCViewer url={url} />
-      ) : (
-        <Terminal wsUrl={url} />
-      );
-
     case "incus":
-      url = `${BASE_WS_URL}/ws/incus?${query}`;
       return params.client === "vnc" ? (
         <VNCViewer url={url} />
       ) : (
-        <Terminal wsUrl={url} />
+        <Terminal url={url} />
       );
 
     default:

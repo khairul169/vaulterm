@@ -70,6 +70,7 @@ type PVEAccessTicket struct {
 func (pve *PVEServer) GetAccessTicket() (*PVEAccessTicket, error) {
 	url := fmt.Sprintf("https://%s:%d/api2/json/access/ticket", pve.HostName, pve.Port)
 
+	// note for myself: don't forget the realm
 	body, err := fetch("POST", url, &PVERequestInit{Body: map[string]string{
 		"username": pve.Username,
 		"password": pve.Password,
@@ -89,9 +90,9 @@ func (pve *PVEServer) GetAccessTicket() (*PVEAccessTicket, error) {
 }
 
 type PVEInstance struct {
-	Type string // "qemu" | "lxc"
-	Node string
-	VMID string
+	Type string `json:"type"` // "qemu" | "lxc"
+	Node string `json:"node"`
+	VMID string `json:"vmid"`
 }
 
 type PVEVNCTicketData struct {

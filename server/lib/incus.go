@@ -82,6 +82,9 @@ func (i *IncusServer) InstanceExec(instance string, command []string, interactiv
 			"command":            command,
 			"interactive":        interactive,
 			"wait-for-websocket": true,
+			"environment": map[string]string{
+				"TERM": "xterm-256color",
+			},
 		},
 	})
 	if err != nil {

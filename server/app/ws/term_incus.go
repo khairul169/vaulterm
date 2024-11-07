@@ -1,4 +1,4 @@
-package lib
+package ws
 
 import (
 	"crypto/tls"
@@ -9,10 +9,20 @@ import (
 
 	fastWs "github.com/fasthttp/websocket"
 	"github.com/gofiber/contrib/websocket"
+	"rul.sh/vaulterm/lib"
 )
 
-func NewIncusWebsocketSession(c *websocket.Conn, incus *IncusServer) error {
-	exec, err := incus.InstanceExec("test", []string{"/bin/sh"}, true)
+type IncusWebsocketSession struct {
+	Instance string `json:"instance"`
+	Shell    string `json:"shell"`
+}
+
+func (i *IncusWebsocketSession) NewTerminal(c *websocket.Conn, incus *lib.IncusServer) error {
+	if i.Shell == "" {
+		i.Shell = "/bin/sh"
+	}
+
+	exec, err := incus.InstanceExec(i.Instance, []string{i.Shell}, true)
 	if err != nil {
 		return err
 	}

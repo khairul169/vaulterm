@@ -19,6 +19,12 @@ const VNCViewer = ({ ...props }: VNCViewerProps) => {
       const rfb = new RFB(screenRef.current!, props.url);
       rfb.scaleViewport = true;
 
+      const canvas: HTMLCanvasElement | null =
+        rfb._target?.querySelector("canvas");
+      if (canvas) {
+        canvas.style.cursor = "default";
+      }
+
       // @ts-ignore
       const ws: WebSocket = rfb._sock._websocket;
       let password: string | null = null;
