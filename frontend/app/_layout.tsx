@@ -27,7 +27,12 @@ export default function RootLayout() {
   return (
     <Providers>
       <Stack>
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen
+          name="index"
+          options={{ headerShown: false, title: "Loading..." }}
+        />
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" options={{ title: "Not Found" }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>

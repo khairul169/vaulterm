@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { PagerViewProps } from "./pager-view";
 
 const PagerView = ({
-  className,
+  EmptyComponent,
   children,
   page,
   initialPage,
@@ -33,7 +33,16 @@ const PagerView = ({
     });
   }, [curPage, children]);
 
-  return content;
+  const pageElement = useMemo(() => {
+    return Array.isArray(children) ? children[curPage] : null;
+  }, [curPage, children]);
+
+  return (
+    <>
+      {!pageElement && EmptyComponent ? <EmptyComponent key="-1" /> : null}
+      {content}
+    </>
+  );
 };
 
 export default PagerView;

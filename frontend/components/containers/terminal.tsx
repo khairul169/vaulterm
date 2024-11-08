@@ -1,15 +1,9 @@
 import React, { ComponentPropsWithoutRef } from "react";
 import XTermJs, { XTermRef } from "./xtermjs";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  Pressable,
-  ScrollView,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-} from "react-native";
+import { ScrollView, Text, TextStyle, View } from "tamagui";
+import Pressable from "../ui/pressable";
+import Icons from "../ui/icons";
 
 const Keys = {
   ArrowLeft: "\x1b[D",
@@ -45,7 +39,7 @@ const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
   };
 
   return (
-    <View style={[styles.container, style]} {...props}>
+    <View flex={1} bg="$background" {...props}>
       {client === "xtermjs" && (
         <XTermJs
           ref={xtermRef}
@@ -56,32 +50,32 @@ const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
 
       <ScrollView
         horizontal
-        style={{ flexGrow: 0 }}
-        contentContainerStyle={styles.buttons}
+        flexGrow={0}
+        contentContainerStyle={{ flexDirection: "row" }}
       >
         <TerminalButton
-          title={<Ionicons name="swap-horizontal" color="white" size={16} />}
-          onPress={() => send(Keys.Tab)}
+          title={<Icons name="swap-horizontal" size={16} />}
+          // onPress={() => send(Keys.Tab)}
         />
         <TerminalButton title="ESC" onPress={() => send(Keys.Escape)} />
         <TerminalButton
-          title={<Ionicons name="home" color="white" size={16} />}
+          title={<Icons name="home" size={16} />}
           onPress={() => send(Keys.Home)}
         />
         <TerminalButton
-          title={<Ionicons name="arrow-back" color="white" size={18} />}
+          title={<Icons name="arrow-left" size={18} />}
           onPress={() => send(Keys.ArrowLeft)}
         />
         <TerminalButton
-          title={<Ionicons name="arrow-up" color="white" size={18} />}
+          title={<Icons name="arrow-up" size={18} />}
           onPress={() => send(Keys.ArrowUp)}
         />
         <TerminalButton
-          title={<Ionicons name="arrow-down" color="white" size={18} />}
+          title={<Icons name="arrow-down" size={18} />}
           onPress={() => send(Keys.ArrowDown)}
         />
         <TerminalButton
-          title={<Ionicons name="arrow-forward" color="white" size={18} />}
+          title={<Icons name="arrow-right" size={18} />}
           onPress={() => send(Keys.ArrowRight)}
         />
         <TerminalButton title="Enter" onPress={() => send(Keys.Enter)} />
@@ -108,45 +102,11 @@ const TerminalButton = ({
   ...props
 }: ComponentPropsWithoutRef<typeof Pressable> & {
   title: string | React.ReactNode;
-  textStyle?: StyleProp<TextStyle>;
+  textStyle?: TextStyle;
 }) => (
-  <Pressable
-    style={({ pressed }) => [styles.btn, pressed && styles.btnPressed]}
-    {...props}
-  >
-    {typeof title === "string" ? (
-      <Text style={[styles.btnText, textStyle]}>{title}</Text>
-    ) : (
-      title
-    )}
+  <Pressable px="$4" py="$3" $hover={{ bg: "$blue3" }} {...props}>
+    {typeof title === "string" ? <Text {...textStyle}>{title}</Text> : title}
   </Pressable>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#232323",
-  },
-  buttons: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "stretch",
-    backgroundColor: "#232323",
-  },
-  btn: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  btnPressed: {
-    backgroundColor: "#3a3a3a",
-  },
-  btnText: {
-    color: "white",
-    fontSize: 16,
-  },
-});
 
 export default Terminal;

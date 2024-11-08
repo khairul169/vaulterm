@@ -20,6 +20,29 @@ type XTermJsProps = {
   wsUrl: string;
 };
 
+// vscode-snazzy https://github.com/Tyriar/vscode-snazzy
+const snazzyTheme = {
+  foreground: "#eff0eb",
+  background: "#282a36",
+  selection: "#97979b33",
+  black: "#282a36",
+  brightBlack: "#686868",
+  red: "#ff5c57",
+  brightRed: "#ff5c57",
+  green: "#5af78e",
+  brightGreen: "#5af78e",
+  yellow: "#f3f99d",
+  brightYellow: "#f3f99d",
+  blue: "#57c7ff",
+  brightBlue: "#57c7ff",
+  magenta: "#ff6ac1",
+  brightMagenta: "#ff6ac1",
+  cyan: "#9aedfe",
+  brightCyan: "#9aedfe",
+  white: "#f1f1f0",
+  brightWhite: "#eff0eb",
+};
+
 export interface XTermRef extends DOMImperativeFactory {
   send: (...args: JSONValue[]) => void;
 }
@@ -35,7 +58,11 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
       return;
     }
 
-    const xterm = new XTerm();
+    const xterm = new XTerm({
+      fontFamily: '"Cascadia Code", Menlo, monospace',
+      theme: snazzyTheme,
+      cursorBlink: true,
+    });
     xterm.open(container);
 
     const fitAddon = new FitAddon();
@@ -131,6 +158,8 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     <div
       ref={containerRef}
       style={{
+        background: snazzyTheme.background,
+        padding: 12,
         flex: !IS_DOM ? 1 : undefined,
         width: "100%",
         height: IS_DOM ? "100vh" : undefined,

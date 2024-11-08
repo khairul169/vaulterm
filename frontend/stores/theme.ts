@@ -11,7 +11,7 @@ type Store = {
 const useThemeStore = create(
   persist<Store>(
     (set) => ({
-      theme: "light",
+      theme: "dark",
       setTheme: (theme: "light" | "dark") => {
         set({ theme });
       },

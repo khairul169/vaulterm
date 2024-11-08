@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useMemo, useState } from "react";
+import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import tamaguiConfig from "@/tamagui.config";
 import {
   DarkTheme,
@@ -8,6 +8,8 @@ import {
 import { TamaguiProvider, Theme } from "@tamagui/core";
 import useThemeStore from "@/stores/theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { router, usePathname, useRootNavigationState } from "expo-router";
+import { useAuthStore } from "@/stores/auth";
 
 type Props = PropsWithChildren;
 
@@ -33,16 +35,39 @@ const Providers = ({ children }: Props) => {
   }, [theme, colorScheme]);
 
   return (
-    <ThemeProvider value={navTheme}>
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
-        <Theme name="blue">
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Theme>
-      </TamaguiProvider>
-    </ThemeProvider>
+    <>
+      <AuthProvider />
+      <ThemeProvider value={navTheme}>
+        <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
+          <Theme name="blue">
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </Theme>
+        </TamaguiProvider>
+      </ThemeProvider>
+    </>
   );
+};
+
+const AuthProvider = () => {
+  const pathname = usePathname();
+  const rootNavigationState = useRootNavigationState();
+  const { isLoggedIn } = useAuthStore();
+
+  useEffect(() => {
+    if (!rootNavigationState?.key) {
+      return;
+    }
+
+    if (!pathname.startsWith("/auth") && !isLoggedIn) {
+      router.replace("/auth/login");
+    } else if (pathname.startsWith("/auth") && isLoggedIn) {
+      router.replace("/");
+    }
+  }, [pathname, rootNavigationState, isLoggedIn]);
+
+  return null;
 };
 
 export default Providers;

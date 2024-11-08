@@ -22,11 +22,10 @@ type IncusSessionProps = {
   };
 };
 
-export type InteractiveSessionProps = { params: { hostId: string } } & (
-  | SSHSessionProps
-  | PVESessionProps
-  | IncusSessionProps
-);
+export type InteractiveSessionProps = {
+  label: string;
+  params: { hostId: string };
+} & (SSHSessionProps | PVESessionProps | IncusSessionProps);
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
   const query = new URLSearchParams(params);

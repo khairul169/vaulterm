@@ -1,0 +1,25 @@
+diff --git a/lib/commonjs/views/Drawer.native.js b/lib/commonjs/views/Drawer.native.js
+index 7bac11bd3e76fc78284aabd81b6a94446c64813f..6cf9d65503f5ec35cea276bdc6803adfc60d2c0e 100644
+--- a/lib/commonjs/views/Drawer.native.js
++++ b/lib/commonjs/views/Drawer.native.js
+@@ -159,16 +159,20 @@ function Drawer({
+   React.useEffect(() => toggleDrawer(open), [open, toggleDrawer]);
+   const startX = (0, _reactNativeReanimated.useSharedValue)(0);
+   let pan = _GestureHandler.Gesture?.Pan().onBegin(event => {
++    'worklet';
+     startX.value = translationX.value;
+     gestureState.value = event.state;
+     touchStartX.value = event.x;
+   }).onStart(() => {
++    'worklet';
+     (0, _reactNativeReanimated.runOnJS)(onGestureBegin)();
+   }).onChange(event => {
++    'worklet';
+     touchX.value = event.x;
+     translationX.value = startX.value + event.translationX;
+     gestureState.value = event.state;
+   }).onEnd((event, success) => {
++    'worklet';
+     gestureState.value = event.state;
+     if (!success) {
+       (0, _reactNativeReanimated.runOnJS)(onGestureAbort)();
