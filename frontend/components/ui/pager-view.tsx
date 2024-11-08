@@ -19,13 +19,13 @@ const PagerView = ({
 
   const [onPageSelect, clearPageSelectDebounce] = useDebounceCallback(
     (page) => onChangePage?.(page),
-    100
+    300
   );
 
   const [setPage] = useDebounceCallback((page) => {
     ref.current?.setPage(page);
     clearPageSelectDebounce();
-  }, 300);
+  }, 100);
 
   useEffect(() => {
     if (page != null) {

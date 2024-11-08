@@ -18,10 +18,11 @@ type XTermJsProps = {
   dom?: DOMProps;
   style?: CSSProperties;
   wsUrl: string;
+  colorScheme?: "light" | "dark";
 };
 
 // vscode-snazzy https://github.com/Tyriar/vscode-snazzy
-const snazzyTheme = {
+const darkTheme = {
   foreground: "#eff0eb",
   background: "#282a36",
   selection: "#97979b33",
@@ -43,6 +44,28 @@ const snazzyTheme = {
   brightWhite: "#eff0eb",
 };
 
+const lightTheme = {
+  foreground: "#282a36",
+  background: "#e5f2ff",
+  selection: "#97979b33",
+  black: "#eff0eb",
+  brightBlack: "#686868",
+  red: "#d32f2f",
+  brightRed: "#ff5c57",
+  green: "#388e3c",
+  brightGreen: "#5af78e",
+  yellow: "#fbc02d",
+  brightYellow: "#f3f99d",
+  blue: "#1976d2",
+  brightBlue: "#57c7ff",
+  magenta: "#ab47bc",
+  brightMagenta: "#ff6ac1",
+  cyan: "#00acc1",
+  brightCyan: "#9aedfe",
+  white: "#282a36",
+  brightWhite: "#686868",
+};
+
 export interface XTermRef extends DOMImperativeFactory {
   send: (...args: JSONValue[]) => void;
 }
@@ -50,7 +73,9 @@ export interface XTermRef extends DOMImperativeFactory {
 const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
-  const { wsUrl, onLoad, style = {} } = props;
+  const xtermRef = useRef<XTerm | null>(null);
+  const { wsUrl, onLoad, style = {}, colorScheme } = props;
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -60,10 +85,11 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
 
     const xterm = new XTerm({
       fontFamily: '"Cascadia Code", Menlo, monospace',
-      theme: snazzyTheme,
+      theme: theme,
       cursorBlink: true,
     });
     xterm.open(container);
+    xtermRef.current = xterm;
 
     const fitAddon = new FitAddon();
     xterm.loadAddon(fitAddon);
@@ -101,8 +127,6 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     }
 
     function onClose(e: CloseEvent) {
-      console.log("WS Closed", e.reason, e.code);
-
       // Check if the close event was abnormal
       if (!e.wasClean) {
         const reason = e.reason || `Code: ${e.code}`;
@@ -129,6 +153,7 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
 
     return () => {
       xterm.dispose();
+      xtermRef.current = null;
       wsRef.current = null;
       containerRef.current = null;
 
@@ -154,11 +179,17 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     []
   );
 
+  useEffect(() => {
+    if (xtermRef.current) {
+      xtermRef.current.options.theme = theme;
+    }
+  }, [theme]);
+
   return (
     <div
       ref={containerRef}
       style={{
-        background: snazzyTheme.background,
+        background: theme.background,
         padding: 12,
         flex: !IS_DOM ? 1 : undefined,
         width: "100%",

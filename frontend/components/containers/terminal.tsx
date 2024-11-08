@@ -4,6 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { ScrollView, Text, TextStyle, View } from "tamagui";
 import Pressable from "../ui/pressable";
 import Icons from "../ui/icons";
+import useThemeStore from "@/stores/theme";
 
 const Keys = {
   ArrowLeft: "\x1b[D",
@@ -29,6 +30,7 @@ type TerminalProps = ComponentPropsWithoutRef<typeof View> & XTermJsProps;
 
 const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
   const xtermRef = React.useRef<XTermRef>(null);
+  const theme = useThemeStore((i) => i.theme);
 
   const send = (data: string) => {
     switch (client) {
@@ -45,6 +47,7 @@ const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
           ref={xtermRef}
           dom={{ scrollEnabled: false }}
           wsUrl={props.url}
+          colorScheme={theme}
         />
       )}
 
