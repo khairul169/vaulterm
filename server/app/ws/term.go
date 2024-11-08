@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"log"
+
 	"github.com/gofiber/contrib/websocket"
 	"rul.sh/vaulterm/app/hosts"
 	"rul.sh/vaulterm/lib"
@@ -11,9 +13,10 @@ func HandleTerm(c *websocket.Conn) {
 	hostId := c.Query("hostId")
 
 	hostRepo := hosts.NewHostsRepository()
-	data, _ := hostRepo.Get(hostId)
+	data, err := hostRepo.Get(hostId)
 
 	if data == nil {
+		log.Printf("Cannot find host! Error: %s\n", err.Error())
 		c.WriteMessage(websocket.TextMessage, []byte("Host not found"))
 		return
 	}

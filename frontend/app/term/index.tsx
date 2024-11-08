@@ -15,25 +15,25 @@ const HomePage = () => {
       type: "ssh",
       params: { hostId: "01jc3v9w609f8e2wzw60amv195" },
     },
-    {
-      id: "2",
-      type: "pve",
-      params: { client: "vnc", hostId: "01jc3wp2b3zvgr777f4e3caw4w" },
-    },
-    {
-      id: "3",
-      type: "pve",
-      params: { client: "xtermjs", hostId: "01jc3z3yyn2fgb77tyfxc1tkfy" },
-    },
-    {
-      id: "4",
-      type: "incus",
-      params: {
-        client: "xtermjs",
-        hostId: "01jc3xz9db0v54dg10hk70a13b",
-        shell: "fish",
-      },
-    },
+    // {
+    //   id: "2",
+    //   type: "pve",
+    //   params: { client: "vnc", hostId: "01jc3wp2b3zvgr777f4e3caw4w" },
+    // },
+    // {
+    //   id: "3",
+    //   type: "pve",
+    //   params: { client: "xtermjs", hostId: "01jc3z3yyn2fgb77tyfxc1tkfy" },
+    // },
+    // {
+    //   id: "4",
+    //   type: "incus",
+    //   params: {
+    //     client: "xtermjs",
+    //     hostId: "01jc3xz9db0v54dg10hk70a13b",
+    //     shell: "fish",
+    //   },
+    // },
   ]);
   const [curSession, setSession] = useState(0);
 

@@ -5,16 +5,12 @@ import VNCViewer from "./vncviewer";
 
 type SSHSessionProps = {
   type: "ssh";
-  params: {
-    hostId: string;
-  };
 };
 
 type PVESessionProps = {
   type: "pve";
   params: {
     client: "vnc" | "xtermjs";
-    hostId: string;
   };
 };
 
@@ -22,15 +18,15 @@ type IncusSessionProps = {
   type: "incus";
   params: {
     client: "vnc" | "xtermjs";
-    hostId: string;
     shell?: string;
   };
 };
 
-export type InteractiveSessionProps =
+export type InteractiveSessionProps = { params: { hostId: string } } & (
   | SSHSessionProps
   | PVESessionProps
-  | IncusSessionProps;
+  | IncusSessionProps
+);
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
   const query = new URLSearchParams(params);
