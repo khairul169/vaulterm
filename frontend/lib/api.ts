@@ -6,6 +6,12 @@ export const BASE_WS_URL = BASE_API_URL.replace("http", "ws");
 
 const api = ofetch.create({
   baseURL: BASE_API_URL,
+  onResponseError: (error) => {
+    if (error.response._data) {
+      const message = error.response._data.message;
+      throw new Error(message || "Something went wrong");
+    }
+  },
 });
 
 export const queryClient = new QueryClient();

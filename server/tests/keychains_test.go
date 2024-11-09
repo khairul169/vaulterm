@@ -30,7 +30,16 @@ func TestKeychainsCreate(t *testing.T) {
 	}
 
 	// data := map[string]interface{}{
-	// 	"type":  "user",
+	// 	"type":  "rsa",
+	// 	"label": "RSA Key",
+	// 	"data": map[string]interface{}{
+	// 		"private":    "",
+	// 		"passphrase": "",
+	// 	},
+	// }
+
+	// data := map[string]interface{}{
+	// 	"type":  "pve",
 	// 	"label": "PVE Key",
 	// 	"data": map[string]interface{}{
 	// 		"username": "root@pam",

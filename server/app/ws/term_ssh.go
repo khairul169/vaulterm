@@ -1,101 +1,37 @@
 package ws
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/gofiber/contrib/websocket"
-	"golang.org/x/crypto/ssh"
+	"rul.sh/vaulterm/lib"
 )
 
-type SSHConfig struct {
-	HostName             string
-	User                 string
-	Password             string
-	Port                 int
-	PrivateKey           string
-	PrivateKeyPassphrase string
-}
-
-func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
-	// Set up SSH client configuration
-	port := cfg.Port
-	if port == 0 {
-		port = 22
-	}
-	auth := []ssh.AuthMethod{
-		ssh.Password(cfg.Password),
-	}
-
-	if cfg.PrivateKey != "" {
-		var err error
-		var signer ssh.Signer
-
-		if cfg.PrivateKeyPassphrase != "" {
-			signer, err = ssh.ParsePrivateKeyWithPassphrase([]byte(cfg.PrivateKey), []byte(cfg.PrivateKeyPassphrase))
-		} else {
-			signer, err = ssh.ParsePrivateKey([]byte(cfg.PrivateKey))
-		}
-
-		if err != nil {
-			return fmt.Errorf("unable to parse private key: %v", err)
-		}
-		auth = append(auth, ssh.PublicKeys(signer))
-	}
-
-	sshConfig := &ssh.ClientConfig{
-		User:            cfg.User,
-		Auth:            auth,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	// Connect to SSH server
-	hostName := fmt.Sprintf("%s:%d", cfg.HostName, port)
-	sshConn, err := ssh.Dial("tcp", hostName, sshConfig)
+func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) error {
+	con, err := client.Connect()
 	if err != nil {
+		log.Printf("error connecting to SSH: %v", err)
 		return err
 	}
-	defer sshConn.Close()
+	defer con.Close()
 
-	// Start an SSH shell session
-	session, err := sshConn.NewSession()
+	shell, err := client.StartPtyShell(con)
 	if err != nil {
+		log.Printf("error starting SSH shell: %v", err)
 		return err
 	}
+
+	session := shell.Session
 	defer session.Close()
-
-	stdoutPipe, err := session.StdoutPipe()
-	if err != nil {
-		return err
-	}
-
-	stderrPipe, err := session.StderrPipe()
-	if err != nil {
-		return err
-	}
-
-	stdinPipe, err := session.StdinPipe()
-	if err != nil {
-		return err
-	}
-
-	err = session.RequestPty("xterm-256color", 80, 24, ssh.TerminalModes{})
-	if err != nil {
-		return err
-	}
-
-	if err := session.Shell(); err != nil {
-		return err
-	}
 
 	// Goroutine to send SSH stdout to WebSocket
 	go func() {
 		buf := make([]byte, 1024)
 		for {
-			n, err := stdoutPipe.Read(buf)
+			n, err := shell.Stdout.Read(buf)
 			if err != nil {
 				if err != io.EOF {
 					log.Printf("error reading from SSH stdout: %v", err)
@@ -114,7 +50,7 @@ func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
 	go func() {
 		buf := make([]byte, 1024)
 		for {
-			n, err := stderrPipe.Read(buf)
+			n, err := shell.Stderr.Read(buf)
 			if err != nil {
 				if err != io.EOF {
 					log.Printf("error reading from SSH stderr: %v", err)
@@ -135,6 +71,7 @@ func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
 		for {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
+				log.Printf("error reading from websocket: %v", err)
 				break
 			}
 
@@ -148,8 +85,10 @@ func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
 				continue
 			}
 
-			stdinPipe.Write(msg)
+			shell.Stdin.Write(msg)
 		}
+
+		log.Println("SSH session closed")
 	}()
 
 	// Wait for the SSH session to close
@@ -158,6 +97,5 @@ func NewSSHWebsocketSession(c *websocket.Conn, cfg *SSHConfig) error {
 		return err
 	}
 
-	log.Println("SSH session ended normally")
 	return nil
 }

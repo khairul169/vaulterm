@@ -8,8 +8,13 @@ import Icons from "@/components/ui/icons";
 import SearchInput from "@/components/ui/search-input";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { hostFormModal } from "./form";
+import OSIcons from "@/components/ui/os-icons";
 
-const HostsList = () => {
+type HostsListProps = {
+  allowEdit?: boolean;
+};
+
+const HostsList = ({ allowEdit = true }: HostsListProps) => {
   const openSession = useTermSession((i) => i.push);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
@@ -37,6 +42,7 @@ const HostsList = () => {
   }, [hosts.data, search]);
 
   const onOpen = (host: any) => {
+    if (!allowEdit) return;
     hostFormModal.onOpen(host);
   };
 
@@ -88,9 +94,9 @@ const HostsList = () => {
               flexBasis="100%"
               cursor="pointer"
               $gtXs={{ flexBasis: "50%" }}
-              $gtSm={{ flexBasis: "33.3%" }}
-              $gtMd={{ flexBasis: "25%" }}
-              $gtLg={{ flexBasis: "20%" }}
+              $gtMd={{ flexBasis: "33.3%" }}
+              $gtLg={{ flexBasis: "25%" }}
+              $gtXl={{ flexBasis: "20%" }}
               p="$2"
               group
               numberOfTaps={2}
@@ -99,6 +105,13 @@ const HostsList = () => {
             >
               <Card bordered p="$4">
                 <XStack>
+                  <OSIcons
+                    name={host.os}
+                    size={18}
+                    mr="$2"
+                    fallback="desktop-classic"
+                  />
+
                   <View flex={1}>
                     <Text>{host.label}</Text>
                     <Text fontSize="$3" mt="$2">
@@ -106,18 +119,20 @@ const HostsList = () => {
                     </Text>
                   </View>
 
-                  <Button
-                    circular
-                    display="none"
-                    $sm={{ display: "block" }}
-                    $group-hover={{ display: "block" }}
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      onOpen(host);
-                    }}
-                  >
-                    <Icons name="pencil" size={16} />
-                  </Button>
+                  {allowEdit && (
+                    <Button
+                      circular
+                      display="none"
+                      $sm={{ display: "block" }}
+                      $group-hover={{ display: "block" }}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        onOpen(host);
+                      }}
+                    >
+                      <Icons name="pencil" size={16} />
+                    </Button>
+                  )}
                 </XStack>
               </Card>
             </MultiTapPressable>

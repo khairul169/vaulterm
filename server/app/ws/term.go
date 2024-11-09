@@ -6,13 +6,14 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"rul.sh/vaulterm/app/hosts"
 	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/models"
 	"rul.sh/vaulterm/utils"
 )
 
 func HandleTerm(c *websocket.Conn) {
 	hostId := c.Query("hostId")
 
-	hostRepo := hosts.NewHostsRepository()
+	hostRepo := hosts.NewRepository()
 	data, err := hostRepo.Get(hostId)
 
 	if data == nil {
@@ -33,30 +34,27 @@ func HandleTerm(c *websocket.Conn) {
 	}
 }
 
-func sshHandler(c *websocket.Conn, data *hosts.GetHostResult) {
-	username, _ := data.Key["username"].(string)
-	password, _ := data.Key["password"].(string)
-
-	cfg := &SSHConfig{
+func sshHandler(c *websocket.Conn, data *models.HostDecrypted) {
+	cfg := lib.NewSSHClient(&lib.SSHClientConfig{
 		HostName: data.Host.Host,
-		Port:     data.Host.Port,
-		User:     username,
-		Password: password,
-	}
+		Port:     data.Port,
+		Key:      data.Key,
+		AltKey:   data.AltKey,
+	})
 
 	if err := NewSSHWebsocketSession(c, cfg); err != nil {
 		c.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 	}
 }
 
-func pveHandler(c *websocket.Conn, data *hosts.GetHostResult) {
+func pveHandler(c *websocket.Conn, data *models.HostDecrypted) {
 	client := c.Query("client")
 	username, _ := data.Key["username"].(string)
 	password, _ := data.Key["password"].(string)
 
 	pve := &lib.PVEServer{
 		HostName: data.Host.Host,
-		Port:     data.Host.Port,
+		Port:     data.Port,
 		Username: username,
 		Password: password,
 	}
@@ -84,7 +82,7 @@ func pveHandler(c *websocket.Conn, data *hosts.GetHostResult) {
 	}
 }
 
-func incusHandler(c *websocket.Conn, data *hosts.GetHostResult) {
+func incusHandler(c *websocket.Conn, data *models.HostDecrypted) {
 	shell := c.Query("shell")
 
 	cert, _ := data.Key["cert"].(string)
@@ -97,7 +95,7 @@ func incusHandler(c *websocket.Conn, data *hosts.GetHostResult) {
 
 	incus := &lib.IncusServer{
 		HostName:   data.Host.Host,
-		Port:       data.Host.Port,
+		Port:       data.Port,
 		ClientCert: cert,
 		ClientKey:  key,
 	}

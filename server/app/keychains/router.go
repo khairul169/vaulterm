@@ -16,7 +16,7 @@ func Router(app *fiber.App) {
 }
 
 func getAll(c *fiber.Ctx) error {
-	repo := NewKeychainsRepository()
+	repo := NewRepository()
 	rows, err := repo.GetAll()
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
@@ -33,7 +33,7 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewKeychainsRepository()
+	repo := NewRepository()
 
 	item := &models.Keychain{
 		Type:  body.Type,

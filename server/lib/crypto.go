@@ -114,6 +114,10 @@ func Decrypt(encrypted string) (string, error) {
 		return "", err
 	}
 
+	if len(data) < 16 {
+		return "", fmt.Errorf("invalid encrypted data")
+	}
+
 	block, err := aes.NewCipher(keyDec)
 	if err != nil {
 		return "", err

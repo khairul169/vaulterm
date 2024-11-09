@@ -19,7 +19,7 @@ func Router(app *fiber.App) {
 }
 
 func getAll(c *fiber.Ctx) error {
-	repo := NewHostsRepository()
+	repo := NewRepository()
 	rows, err := repo.GetAll()
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
@@ -36,7 +36,7 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewHostsRepository()
+	repo := NewRepository()
 	item := &models.Host{
 		Type:     body.Type,
 		Label:    body.Label,
@@ -47,6 +47,13 @@ func create(c *fiber.Ctx) error {
 		KeyID:    body.KeyID,
 		AltKeyID: body.AltKeyID,
 	}
+
+	osName, err := tryConnect(item)
+	if err != nil {
+		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
+	}
+	item.OS = osName
+
 	if err := repo.Create(item); err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
@@ -60,7 +67,7 @@ func update(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewHostsRepository()
+	repo := NewRepository()
 
 	id := c.Params("id")
 	exist, _ := repo.Exists(id)
@@ -79,6 +86,13 @@ func update(c *fiber.Ctx) error {
 		KeyID:    body.KeyID,
 		AltKeyID: body.AltKeyID,
 	}
+
+	osName, err := tryConnect(item)
+	if err != nil {
+		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
+	}
+	item.OS = osName
+
 	if err := repo.Update(item); err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
@@ -87,7 +101,7 @@ func update(c *fiber.Ctx) error {
 }
 
 func delete(c *fiber.Ctx) error {
-	repo := NewHostsRepository()
+	repo := NewRepository()
 
 	id := c.Params("id")
 	exist, _ := repo.Exists(id)

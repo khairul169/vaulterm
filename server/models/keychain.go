@@ -8,6 +8,7 @@ import (
 
 const (
 	KeychainTypeUserPass    = "user"
+	KeychainTypePVE         = "pve"
 	KeychainTypeRSA         = "rsa"
 	KeychainTypeCertificate = "cert"
 )

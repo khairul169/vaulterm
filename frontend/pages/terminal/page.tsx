@@ -35,7 +35,7 @@ const TerminalPage = () => {
         style={{ flex: 1 }}
         page={curSession}
         onChangePage={setSession}
-        EmptyComponent={HostsList}
+        EmptyComponent={() => <HostsList allowEdit={false} />}
       >
         {sessions.map((session) => (
           <InteractiveSession key={session.id} {...session} />

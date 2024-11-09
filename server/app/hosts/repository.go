@@ -8,7 +8,7 @@ import (
 
 type Hosts struct{ db *gorm.DB }
 
-func NewHostsRepository() *Hosts {
+func NewRepository() *Hosts {
 	return &Hosts{db: db.Get()}
 }
 
@@ -19,13 +19,7 @@ func (r *Hosts) GetAll() ([]*models.Host, error) {
 	return rows, ret.Error
 }
 
-type GetHostResult struct {
-	Host   *models.Host
-	Key    map[string]interface{}
-	AltKey map[string]interface{}
-}
-
-func (r *Hosts) Get(id string) (*GetHostResult, error) {
+func (r *Hosts) Get(id string) (*models.HostDecrypted, error) {
 	var host models.Host
 	ret := r.db.Joins("Key").Joins("AltKey").Where("hosts.id = ?", id).First(&host)
 
@@ -33,17 +27,9 @@ func (r *Hosts) Get(id string) (*GetHostResult, error) {
 		return nil, ret.Error
 	}
 
-	res := &GetHostResult{Host: &host}
-
-	if host.Key.Data != "" {
-		if err := host.Key.DecryptData(&res.Key); err != nil {
-			return nil, err
-		}
-	}
-	if host.AltKey.Data != "" {
-		if err := host.AltKey.DecryptData(&res.AltKey); err != nil {
-			return nil, err
-		}
+	res, err := host.DecryptKeys()
+	if err != nil {
+		return nil, err
 	}
 
 	return res, ret.Error
