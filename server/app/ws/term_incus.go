@@ -13,6 +13,7 @@ import (
 )
 
 type IncusWebsocketSession struct {
+	Type     string `json:"type"` // "qemu" | "lxc"
 	Instance string `json:"instance"`
 	Shell    string `json:"shell"`
 }

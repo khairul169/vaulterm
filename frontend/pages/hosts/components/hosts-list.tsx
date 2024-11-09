@@ -7,6 +7,7 @@ import { MultiTapPressable } from "@/components/ui/pressable";
 import Icons from "@/components/ui/icons";
 import SearchInput from "@/components/ui/search-input";
 import { useTermSession } from "@/stores/terminal-sessions";
+import { hostFormModal } from "./form";
 
 const HostsList = () => {
   const openSession = useTermSession((i) => i.push);
@@ -36,6 +37,10 @@ const HostsList = () => {
   }, [hosts.data, search]);
 
   const onOpen = (host: any) => {
+    hostFormModal.onOpen(host);
+  };
+
+  const onOpenTerminal = (host: any) => {
     const session: any = {
       id: host.id,
       label: host.label,
@@ -47,10 +52,6 @@ const HostsList = () => {
 
     if (host.type === "pve") {
       session.params.client = host.metadata?.type === "lxc" ? "xtermjs" : "vnc";
-    }
-
-    if (host.type === "incus") {
-      session.params.shell = "bash";
     }
 
     openSession(session);
@@ -93,7 +94,8 @@ const HostsList = () => {
               p="$2"
               group
               numberOfTaps={2}
-              onMultiTap={() => onOpen(host)}
+              onMultiTap={() => onOpenTerminal(host)}
+              onTap={() => onOpen(host)}
             >
               <Card bordered p="$4">
                 <XStack>
@@ -107,7 +109,12 @@ const HostsList = () => {
                   <Button
                     circular
                     display="none"
+                    $sm={{ display: "block" }}
                     $group-hover={{ display: "block" }}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      onOpen(host);
+                    }}
                   >
                     <Icons name="pencil" size={16} />
                   </Button>

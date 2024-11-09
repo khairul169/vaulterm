@@ -1,5 +1,9 @@
 import React, { forwardRef } from "react";
+import { Controller, FieldValues } from "react-hook-form";
 import { Select as BaseSelect } from "tamagui";
+import { FormFieldBaseProps } from "./utility";
+import { ErrorMessage } from "./form";
+import Icons from "./icons";
 
 export type SelectItem = {
   label: string;
@@ -50,7 +54,10 @@ const Select = forwardRef<SelectRef, SelectProps>(
                 key={item.value}
                 value={item.value}
                 index={idx + 1}
+                justifyContent="flex-start"
+                gap="$2"
               >
+                {value === item.value && <Icons name="check" size={16} />}
                 <BaseSelect.ItemText>{item.label}</BaseSelect.ItemText>
               </BaseSelect.Item>
             ))}
@@ -60,6 +67,26 @@ const Select = forwardRef<SelectRef, SelectProps>(
       </BaseSelect>
     );
   }
+);
+
+type SelectFieldProps<T extends FieldValues> = FormFieldBaseProps<T> &
+  SelectProps;
+
+export const SelectField = <T extends FieldValues>({
+  form,
+  name,
+  ...props
+}: SelectFieldProps<T>) => (
+  <Controller
+    control={form.control}
+    name={name}
+    render={({ field, fieldState }) => (
+      <>
+        <Select w="auto" f={1} {...field} {...props} />
+        <ErrorMessage error={fieldState.error} />
+      </>
+    )}
+  />
 );
 
 export default Select;

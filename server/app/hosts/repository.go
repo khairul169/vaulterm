@@ -14,7 +14,7 @@ func NewHostsRepository() *Hosts {
 
 func (r *Hosts) GetAll() ([]*models.Host, error) {
 	var rows []*models.Host
-	ret := r.db.Order("created_at DESC").Find(&rows)
+	ret := r.db.Order("id DESC").Find(&rows)
 
 	return rows, ret.Error
 }
@@ -49,6 +49,20 @@ func (r *Hosts) Get(id string) (*GetHostResult, error) {
 	return res, ret.Error
 }
 
+func (r *Hosts) Exists(id string) (bool, error) {
+	var count int64
+	ret := r.db.Model(&models.Host{}).Where("id = ?", id).Count(&count)
+	return count > 0, ret.Error
+}
+
+func (r *Hosts) Delete(id string) error {
+	return r.db.Delete(&models.Host{Model: models.Model{ID: id}}).Error
+}
+
 func (r *Hosts) Create(item *models.Host) error {
 	return r.db.Create(item).Error
+}
+
+func (r *Hosts) Update(item *models.Host) error {
+	return r.db.Save(item).Error
 }

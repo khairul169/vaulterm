@@ -1,0 +1,39 @@
+diff --git a/lib/index.mjs b/lib/index.mjs
+index 56bfb8f948c05032d5250123cc5c1a59a53ba8ff..b81c18ead97d3bc371f8f1f1fb48fdc2cedfb68b 100644
+--- a/lib/index.mjs
++++ b/lib/index.mjs
+@@ -870,7 +870,7 @@ class ZodType {
+ }
+ const cuidRegex = /^c[^\s-]{8,}$/i;
+ const cuid2Regex = /^[0-9a-z]+$/;
+-const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+ // const uuidRegex =
+ //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+ const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+diff --git a/lib/index.umd.js b/lib/index.umd.js
+index 5b15271fa65f0a31288578d0e35e3f2e17d4d741..a4477ddf06bacd8280f68c8d79fed15ad94e22d8 100644
+--- a/lib/index.umd.js
++++ b/lib/index.umd.js
+@@ -876,7 +876,7 @@
+     }
+     const cuidRegex = /^c[^\s-]{8,}$/i;
+     const cuid2Regex = /^[0-9a-z]+$/;
+-    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+     // const uuidRegex =
+     //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+diff --git a/lib/types.js b/lib/types.js
+index 0eb943a350832a548f0c7c1b4bb43a4207ba44fd..f41bd264f0e32cc319dcad7ef76814870d67dc95 100644
+--- a/lib/types.js
++++ b/lib/types.js
+@@ -341,7 +341,7 @@ exports.Schema = ZodType;
+ exports.ZodSchema = ZodType;
+ const cuidRegex = /^c[^\s-]{8,}$/i;
+ const cuid2Regex = /^[0-9a-z]+$/;
+-const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+ // const uuidRegex =
+ //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+ const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;

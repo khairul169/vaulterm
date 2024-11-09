@@ -8,16 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type BaseModel struct {
+type Model struct {
 	ID string `gorm:"primarykey;type:varchar(26)" json:"id"`
 }
 
-func (m *BaseModel) BeforeCreate(tx *gorm.DB) error {
+func (m *Model) BeforeCreate(tx *gorm.DB) error {
 	m.ID = m.GenerateID()
 	return nil
 }
 
-func (m *BaseModel) GenerateID() string {
+func (m *Model) GenerateID() string {
 	return strings.ToLower(ulid.Make().String())
 }
 

@@ -7,15 +7,16 @@ import {
 } from "@react-navigation/native";
 import { TamaguiProvider, Theme } from "@tamagui/core";
 import useThemeStore from "@/stores/theme";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { router, usePathname, useRootNavigationState } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
+import { PortalProvider } from "tamagui";
+import { queryClient } from "@/lib/api";
 
 type Props = PropsWithChildren;
 
 const Providers = ({ children }: Props) => {
   const colorScheme = useThemeStore((i) => i.theme);
-  const [queryClient] = useState(() => new QueryClient());
 
   const theme = useMemo(() => {
     return colorScheme === "dark"
@@ -40,9 +41,11 @@ const Providers = ({ children }: Props) => {
       <ThemeProvider value={navTheme}>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <Theme name="blue">
-            <QueryClientProvider client={queryClient}>
-              {children}
-            </QueryClientProvider>
+            <PortalProvider shouldAddRootHost>
+              <QueryClientProvider client={queryClient}>
+                {children}
+              </QueryClientProvider>
+            </PortalProvider>
           </Theme>
         </TamaguiProvider>
       </ThemeProvider>

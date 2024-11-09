@@ -6,7 +6,7 @@ const (
 )
 
 type User struct {
-	BaseModel
+	Model
 
 	Name     string `json:"name"`
 	Username string `json:"username" gorm:"unique"`

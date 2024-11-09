@@ -13,7 +13,7 @@ const (
 )
 
 type Keychain struct {
-	BaseModel
+	Model
 
 	Label string `json:"label"`
 	Type  string `json:"type" gorm:"not null;index:keychains_type_idx;type:varchar(12)"`
