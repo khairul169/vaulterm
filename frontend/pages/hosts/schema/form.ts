@@ -44,6 +44,7 @@ const incusSchema = hostSchema.merge(
     metadata: z.object({
       type: z.enum(["lxc", "qemu"]),
       instance: z.string().min(1, { message: "Instance name is required" }),
+      user: z.coerce.number().nullish(),
       shell: z.string().nullish(),
     }),
   })

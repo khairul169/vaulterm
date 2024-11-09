@@ -15,6 +15,7 @@ import (
 type IncusWebsocketSession struct {
 	Type     string `json:"type"` // "qemu" | "lxc"
 	Instance string `json:"instance"`
+	User     *int   `json:"user"`
 	Shell    string `json:"shell"`
 }
 
@@ -23,7 +24,10 @@ func (i *IncusWebsocketSession) NewTerminal(c *websocket.Conn, incus *lib.IncusS
 		i.Shell = "/bin/sh"
 	}
 
-	exec, err := incus.InstanceExec(i.Instance, []string{i.Shell}, true)
+	exec, err := incus.InstanceExec(i.Instance, []string{i.Shell}, &lib.IncusInstanceExecOptions{
+		Interactive: true,
+		User:        i.User,
+	})
 	if err != nil {
 		return err
 	}

@@ -172,9 +172,18 @@ const IncusFormFields = ({ form }: MiscFormFieldProps) => {
         />
       </FormField>
       {type === "lxc" && (
-        <FormField label="Shell">
-          <InputField form={form} name="metadata.shell" placeholder="bash" />
-        </FormField>
+        <>
+          <FormField label="User ID">
+            <InputField
+              form={form}
+              keyboardType="number-pad"
+              name="metadata.user"
+            />
+          </FormField>
+          <FormField label="Shell">
+            <InputField form={form} name="metadata.shell" placeholder="bash" />
+          </FormField>
+        </>
       )}
     </>
   );

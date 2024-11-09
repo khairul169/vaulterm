@@ -67,6 +67,11 @@ func (i *IncusServer) Fetch(method string, url string, cfg *IncusFetchConfig) ([
 	return io.ReadAll(resp.Body)
 }
 
+type IncusInstanceExecOptions struct {
+	Interactive bool
+	User        *int
+}
+
 type IncusInstanceExecRes struct {
 	ID        string
 	Operation string
@@ -74,17 +79,23 @@ type IncusInstanceExecRes struct {
 	Secret    string
 }
 
-func (i *IncusServer) InstanceExec(instance string, command []string, interactive bool) (*IncusInstanceExecRes, error) {
+func (i *IncusServer) InstanceExec(instance string, command []string, options *IncusInstanceExecOptions) (*IncusInstanceExecRes, error) {
 	url := fmt.Sprintf("/1.0/instances/%s/exec?project=default", instance)
+
+	var user *int
+	if options != nil && options.User != nil {
+		user = options.User
+	}
 
 	body, err := i.Fetch("POST", url, &IncusFetchConfig{
 		Body: map[string]interface{}{
 			"command":            command,
-			"interactive":        interactive,
+			"interactive":        options != nil && options.Interactive,
 			"wait-for-websocket": true,
 			"environment": map[string]string{
 				"TERM": "xterm-256color",
 			},
+			"user": user,
 		},
 	})
 	if err != nil {
