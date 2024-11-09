@@ -50,12 +50,14 @@ func sshHandler(c *websocket.Conn, data *models.HostDecrypted) {
 func pveHandler(c *websocket.Conn, data *models.HostDecrypted) {
 	client := c.Query("client")
 	username, _ := data.Key["username"].(string)
+	realm, _ := data.Key["realm"].(string)
 	password, _ := data.Key["password"].(string)
 
 	pve := &lib.PVEServer{
 		HostName: data.Host.Host,
 		Port:     data.Port,
 		Username: username,
+		Realm:    realm,
 		Password: password,
 	}
 

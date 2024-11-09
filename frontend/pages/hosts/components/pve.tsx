@@ -31,7 +31,7 @@ export const PVEFormFields = ({ form }: MiscFormFieldProps) => {
         />
       </FormField>
 
-      <CredentialsSection />
+      <CredentialsSection type="pve" />
 
       <FormField label="Account">
         <SelectField

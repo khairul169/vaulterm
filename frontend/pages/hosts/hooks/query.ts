@@ -2,18 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { FormSchema } from "../schema/form";
 import api, { queryClient } from "@/lib/api";
 import { useMemo } from "react";
-
-export const useKeychains = () => {
-  return useQuery({
-    queryKey: ["keychains"],
-    queryFn: () => api("/keychains"),
-    select: (i) => i.rows,
-  });
-};
+import { useKeychains } from "@/pages/keychains/hooks/query";
 
 export const useKeychainsOptions = () => {
   const keys = useKeychains();
-
   const data = useMemo(() => {
     const items: any[] = keys.data || [];
 

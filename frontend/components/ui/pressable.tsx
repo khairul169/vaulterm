@@ -9,6 +9,7 @@ const StyledPressable = styled(Button, {
   unstyled: true,
   backgroundColor: "$colorTransparent",
   borderWidth: 0,
+  padding: 0,
   cursor: "pointer",
 });
 

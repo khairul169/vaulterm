@@ -122,7 +122,6 @@ const XTermJs = forwardRef<XTermRef, XTermJsProps>((props, ref) => {
     }
 
     function onOpen() {
-      console.log("WS Open");
       resizeTerminal();
     }
 

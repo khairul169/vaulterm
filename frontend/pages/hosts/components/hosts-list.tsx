@@ -1,14 +1,13 @@
-import { View, Text, Button, ScrollView, Spinner, Card, XStack } from "tamagui";
+import { View, Text, Spinner } from "tamagui";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useNavigation } from "expo-router";
-import { MultiTapPressable } from "@/components/ui/pressable";
-import Icons from "@/components/ui/icons";
 import SearchInput from "@/components/ui/search-input";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { hostFormModal } from "./form";
-import OSIcons from "@/components/ui/os-icons";
+import GridView from "@/components/ui/grid-view";
+import HostItem from "./host-item";
 
 type HostsListProps = {
   allowEdit?: boolean;
@@ -38,10 +37,10 @@ const HostsList = ({ allowEdit = true }: HostsListProps) => {
       });
     }
 
-    return items;
+    return items.map((i: any) => ({ ...i, key: i.id }));
   }, [hosts.data, search]);
 
-  const onOpen = (host: any) => {
+  const onEdit = (host: any) => {
     if (!allowEdit) return;
     hostFormModal.onOpen(host);
   };
@@ -80,67 +79,23 @@ const HostsList = ({ allowEdit = true }: HostsListProps) => {
           <Text mt="$4">Loading...</Text>
         </View>
       ) : (
-        <ScrollView
-          contentContainerStyle={{
-            padding: "$3",
-            paddingTop: 0,
-            flexDirection: "row",
-            flexWrap: "wrap",
-          }}
-        >
-          {hostsList?.map((host: any) => (
-            <MultiTapPressable
-              key={host.id}
-              flexBasis="100%"
-              cursor="pointer"
-              $gtXs={{ flexBasis: "50%" }}
-              $gtMd={{ flexBasis: "33.3%" }}
-              $gtLg={{ flexBasis: "25%" }}
-              $gtXl={{ flexBasis: "20%" }}
-              p="$2"
-              group
-              numberOfTaps={2}
+        <GridView
+          data={hostsList}
+          columns={{ sm: 2, lg: 3, xl: 4 }}
+          contentContainerStyle={{ p: "$2", pt: 0 }}
+          gap="$2.5"
+          renderItem={(host: any) => (
+            <HostItem
+              host={host}
+              onTap={() => {}}
               onMultiTap={() => onOpenTerminal(host)}
-              onTap={() => onOpen(host)}
-            >
-              <Card bordered p="$4">
-                <XStack>
-                  <OSIcons
-                    name={host.os}
-                    size={18}
-                    mr="$2"
-                    fallback="desktop-classic"
-                  />
-
-                  <View flex={1}>
-                    <Text>{host.label}</Text>
-                    <Text fontSize="$3" mt="$2">
-                      {host.host}
-                    </Text>
-                  </View>
-
-                  {allowEdit && (
-                    <Button
-                      circular
-                      display="none"
-                      $sm={{ display: "block" }}
-                      $group-hover={{ display: "block" }}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        onOpen(host);
-                      }}
-                    >
-                      <Icons name="pencil" size={16} />
-                    </Button>
-                  )}
-                </XStack>
-              </Card>
-            </MultiTapPressable>
-          ))}
-        </ScrollView>
+              onEdit={allowEdit ? () => onEdit(host) : null}
+            />
+          )}
+        />
       )}
     </>
   );
 };
 
-export default HostsList;
+export default React.memo(HostsList);

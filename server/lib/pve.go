@@ -13,6 +13,7 @@ type PVEServer struct {
 	HostName string
 	Port     int
 	Username string
+	Realm    string
 	Password string
 }
 
@@ -72,7 +73,7 @@ func (pve *PVEServer) GetAccessTicket() (*PVEAccessTicket, error) {
 
 	// note for myself: don't forget the realm
 	body, err := fetch("POST", url, &PVERequestInit{Body: map[string]string{
-		"username": pve.Username,
+		"username": fmt.Sprintf("%s@%s", pve.Username, pve.Realm),
 		"password": pve.Password,
 	}})
 	if err != nil {

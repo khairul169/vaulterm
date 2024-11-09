@@ -1,13 +1,12 @@
-import { Button } from "tamagui";
 import React from "react";
+import KeyList from "./components/key-list";
+import KeyForm, { keyFormModal } from "./components/form";
 import Drawer from "expo-router/drawer";
-import HostsList from "./components/hosts-list";
-import HostForm, { hostFormModal } from "./components/form";
+import { Button } from "tamagui";
 import Icons from "@/components/ui/icons";
 import { initialValues } from "./schema/form";
-import KeyForm from "../keychains/components/form";
 
-export default function HostsPage() {
+export default function KeychainsPage() {
   return (
     <>
       <Drawer.Screen
@@ -16,7 +15,7 @@ export default function HostsPage() {
             <Button
               bg="$colorTransparent"
               icon={<Icons name="plus" size={24} />}
-              onPress={() => hostFormModal.onOpen(initialValues)}
+              onPress={() => keyFormModal.onOpen(initialValues)}
               $gtSm={{ mr: "$3" }}
             >
               New
@@ -25,8 +24,7 @@ export default function HostsPage() {
         }}
       />
 
-      <HostsList />
-      <HostForm />
+      <KeyList />
       <KeyForm />
     </>
   );

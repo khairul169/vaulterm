@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import { Controller, FieldValues } from "react-hook-form";
-import { Select as BaseSelect } from "tamagui";
+import { Adapt, Select as BaseSelect, Sheet, Text } from "tamagui";
 import { FormFieldBaseProps } from "./utility";
 import { ErrorMessage } from "./form";
 import Icons from "./icons";
@@ -41,6 +41,24 @@ const Select = forwardRef<SelectRef, SelectProps>(
         <BaseSelect.Trigger ref={ref} {...props}>
           <BaseSelect.Value placeholder={placeholder} />
         </BaseSelect.Trigger>
+
+        <Adapt when="sm" platform="touch">
+          <Sheet native modal dismissOnSnapToBottom snapPoints={[40, 60, 80]}>
+            <Sheet.Overlay
+              opacity={0.1}
+              animation="quick"
+              enterStyle={{ opacity: 0 }}
+              exitStyle={{ opacity: 0 }}
+              zIndex={0}
+            />
+            {/* <Sheet.Handle /> */}
+            <Sheet.Frame>
+              <Sheet.ScrollView contentContainerStyle={{ py: "$3" }}>
+                <Adapt.Contents />
+              </Sheet.ScrollView>
+            </Sheet.Frame>
+          </Sheet>
+        </Adapt>
 
         <BaseSelect.Content>
           <BaseSelect.ScrollUpButton />

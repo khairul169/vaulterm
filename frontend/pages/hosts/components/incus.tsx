@@ -42,7 +42,7 @@ export const IncusFormFields = ({ form }: MiscFormFieldProps) => {
         </>
       )}
 
-      <CredentialsSection />
+      <CredentialsSection type="cert" />
 
       <FormField label="Client Certificate">
         <SelectField

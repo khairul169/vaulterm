@@ -16,6 +16,7 @@ export default function Layout() {
         }}
       >
         <Drawer.Screen name="hosts" options={{ title: "Hosts" }} />
+        <Drawer.Screen name="keychains" options={{ title: "Keychains" }} />
         <Drawer.Screen
           name="terminal"
           options={{ title: "Terminal", headerShown: media.sm }}

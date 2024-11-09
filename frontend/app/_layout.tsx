@@ -26,10 +26,17 @@ export default function RootLayout() {
 
   return (
     <Providers>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShadowVisible: false,
+        }}
+      >
         <Stack.Screen
           name="index"
-          options={{ headerShown: false, title: "Loading..." }}
+          options={{
+            headerShown: false,
+            title: "Loading...",
+          }}
         />
         <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ title: "Not Found" }} />

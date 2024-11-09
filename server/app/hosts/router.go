@@ -93,7 +93,7 @@ func update(c *fiber.Ctx) error {
 	}
 	item.OS = osName
 
-	if err := repo.Update(item); err != nil {
+	if err := repo.Update(id, item); err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
 

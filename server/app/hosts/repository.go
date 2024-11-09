@@ -49,6 +49,6 @@ func (r *Hosts) Create(item *models.Host) error {
 	return r.db.Create(item).Error
 }
 
-func (r *Hosts) Update(item *models.Host) error {
-	return r.db.Save(item).Error
+func (r *Hosts) Update(id string, item *models.Host) error {
+	return r.db.Where("id = ?", id).Updates(item).Error
 }

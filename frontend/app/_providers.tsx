@@ -36,20 +36,16 @@ const Providers = ({ children }: Props) => {
   }, [theme, colorScheme]);
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider />
       <ThemeProvider value={navTheme}>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <Theme name="blue">
-            <PortalProvider shouldAddRootHost>
-              <QueryClientProvider client={queryClient}>
-                {children}
-              </QueryClientProvider>
-            </PortalProvider>
+            <PortalProvider shouldAddRootHost>{children}</PortalProvider>
           </Theme>
         </TamaguiProvider>
       </ThemeProvider>
-    </>
+    </QueryClientProvider>
   );
 };
 

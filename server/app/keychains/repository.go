@@ -32,6 +32,12 @@ func (r *Keychains) Get(id string) (*models.Keychain, error) {
 	return &keychain, nil
 }
 
+func (r *Keychains) Exists(id string) (bool, error) {
+	var count int64
+	ret := r.db.Model(&models.Keychain{}).Where("id = ?", id).Count(&count)
+	return count > 0, ret.Error
+}
+
 type KeychainDecrypted struct {
 	models.Keychain
 	Data map[string]interface{}
@@ -49,4 +55,8 @@ func (r *Keychains) GetDecrypted(id string) (*KeychainDecrypted, error) {
 	}
 
 	return &KeychainDecrypted{Keychain: *keychain, Data: data}, nil
+}
+
+func (r *Keychains) Update(id string, item *models.Keychain) error {
+	return r.db.Where("id = ?", id).Updates(item).Error
 }

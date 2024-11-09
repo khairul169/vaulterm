@@ -22,23 +22,24 @@ const Modal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <Adapt when="sm">
+      <Adapt when="sm" platform="touch">
         <Sheet
           animation="quick"
           zIndex={999}
           modal
           dismissOnSnapToBottom
-          disableDrag
+          // disableDrag
         >
-          <Sheet.Frame>
-            <Adapt.Contents />
-          </Sheet.Frame>
           <Sheet.Overlay
-            animation="quicker"
+            opacity={0.1}
+            animation="quick"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
             zIndex={0}
           />
+          <Sheet.Frame>
+            <Adapt.Contents />
+          </Sheet.Frame>
         </Sheet>
       </Adapt>
 
