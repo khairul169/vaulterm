@@ -4,11 +4,21 @@ import { Label, Text, View, XStack } from "tamagui";
 type FormFieldProps = ComponentPropsWithoutRef<typeof XStack> & {
   label?: string;
   htmlFor?: string;
+  vertical?: boolean;
 };
 
-const FormField = ({ label, htmlFor, ...props }: FormFieldProps) => {
+const FormField = ({
+  label,
+  htmlFor,
+  vertical = false,
+  ...props
+}: FormFieldProps) => {
   return (
-    <XStack alignItems="flex-start" {...props}>
+    <XStack
+      flexDirection={vertical ? "column" : "row"}
+      alignItems={vertical ? "stretch" : "flex-start"}
+      {...props}
+    >
       <Label htmlFor={htmlFor} w={120} $xs={{ w: 100 }}>
         {label}
       </Label>

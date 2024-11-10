@@ -16,6 +16,9 @@ const (
 type Keychain struct {
 	Model
 
+	OwnerID string `json:"userId" gorm:"index:hosts_owner_id_idx;type:varchar(26)"`
+	Owner   User   `json:"user" gorm:"foreignKey:OwnerID"`
+
 	Label string `json:"label"`
 	Type  string `json:"type" gorm:"not null;index:keychains_type_idx;type:varchar(12)"`
 	Data  string `json:"-" gorm:"type:text"`

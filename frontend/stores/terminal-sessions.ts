@@ -38,6 +38,9 @@ export const useTermSession = create(
         set({ curSession: idx });
       },
     }),
-    { name: "term-sessions", storage: createJSONStorage(() => AsyncStorage) }
+    {
+      name: "vaulterm:term-sessions",
+      storage: createJSONStorage(() => AsyncStorage),
+    }
   )
 );

@@ -1,10 +1,9 @@
 package auth
 
 import (
-	"strings"
-
 	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/middleware"
 	"rul.sh/vaulterm/utils"
 )
 
@@ -12,12 +11,12 @@ func Router(app *fiber.App) {
 	router := app.Group("/auth")
 
 	router.Post("/login", login)
-	router.Get("/user", getUser)
-	router.Post("/logout", logout)
+	router.Get("/user", middleware.Protected(), getUser)
+	router.Post("/logout", middleware.Protected(), logout)
 }
 
 func login(c *fiber.Ctx) error {
-	repo := NewAuthRepository()
+	repo := NewRepository()
 
 	var body LoginSchema
 	if err := c.BodyParser(&body); err != nil {
@@ -54,32 +53,15 @@ func login(c *fiber.Ctx) error {
 }
 
 func getUser(c *fiber.Ctx) error {
-	auth := c.Get("Authorization")
-	var sessionId string
-
-	if auth != "" {
-		sessionId = strings.Split(auth, " ")[1]
-	}
-
-	repo := NewAuthRepository()
-	session, err := repo.GetSession(sessionId)
-	if err != nil {
-		return utils.ResponseError(c, err, 500)
-	}
-
-	return c.JSON(session)
+	user := utils.GetUser(c)
+	return c.JSON(user)
 }
 
 func logout(c *fiber.Ctx) error {
-	auth := c.Get("Authorization")
 	force := c.Query("force")
-	var sessionId string
+	sessionId := c.Locals("sessionId").(string)
 
-	if auth != "" {
-		sessionId = strings.Split(auth, " ")[1]
-	}
-
-	repo := NewAuthRepository()
+	repo := NewRepository()
 	err := repo.RemoveUserSession(sessionId, force == "true")
 
 	if err != nil {

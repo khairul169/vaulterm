@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Router(app *fiber.App) {
+func Router(app fiber.Router) {
 	router := app.Group("/ws")
 
 	router.Use(func(c *fiber.Ctx) error {

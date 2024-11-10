@@ -12,6 +12,7 @@ import { router, usePathname, useRootNavigationState } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
 import { PortalProvider } from "tamagui";
 import { queryClient } from "@/lib/api";
+import { useAppStore } from "@/stores/app";
 
 type Props = PropsWithChildren;
 
@@ -53,16 +54,24 @@ const AuthProvider = () => {
   const pathname = usePathname();
   const rootNavigationState = useRootNavigationState();
   const { isLoggedIn } = useAuthStore();
+  const { curServer } = useAppStore();
 
   useEffect(() => {
     if (!rootNavigationState?.key) {
       return;
     }
 
-    if (!pathname.startsWith("/auth") && !isLoggedIn) {
+    if (!curServer && !pathname.startsWith("/server")) {
+      router.replace("/server");
+      return;
+    }
+
+    const isProtected = !["/auth", "/server"].find((path) =>
+      pathname.startsWith(path)
+    );
+
+    if (isProtected && !isLoggedIn) {
       router.replace("/auth/login");
-    } else if (pathname.startsWith("/auth") && isLoggedIn) {
-      router.replace("/");
     }
   }, [pathname, rootNavigationState, isLoggedIn]);
 

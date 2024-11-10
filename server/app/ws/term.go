@@ -13,7 +13,8 @@ import (
 func HandleTerm(c *websocket.Conn) {
 	hostId := c.Query("hostId")
 
-	hostRepo := hosts.NewRepository()
+	user := utils.GetUserWs(c)
+	hostRepo := hosts.NewRepository(&hosts.Hosts{User: user})
 	data, err := hostRepo.Get(hostId)
 
 	if data == nil {

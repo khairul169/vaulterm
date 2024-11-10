@@ -3,13 +3,16 @@ package hosts
 import (
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/app/keychains"
 	"rul.sh/vaulterm/lib"
 	"rul.sh/vaulterm/models"
+	"rul.sh/vaulterm/utils"
 )
 
-func tryConnect(host *models.Host) (string, error) {
-	keyRepo := keychains.NewRepository()
+func tryConnect(c *fiber.Ctx, host *models.Host) (string, error) {
+	user := utils.GetUser(c)
+	keyRepo := keychains.NewRepository(&keychains.Keychains{User: user})
 
 	var key map[string]interface{}
 	var altKey map[string]interface{}

@@ -9,7 +9,7 @@ import (
 	"rul.sh/vaulterm/utils"
 )
 
-func Router(app *fiber.App) {
+func Router(app fiber.Router) {
 	router := app.Group("/hosts")
 
 	router.Get("/", getAll)
@@ -19,7 +19,9 @@ func Router(app *fiber.App) {
 }
 
 func getAll(c *fiber.Ctx) error {
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
+
 	rows, err := repo.GetAll()
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
@@ -36,8 +38,11 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
+
 	item := &models.Host{
+		OwnerID:  user.ID,
 		Type:     body.Type,
 		Label:    body.Label,
 		Host:     body.Host,
@@ -48,7 +53,7 @@ func create(c *fiber.Ctx) error {
 		AltKeyID: body.AltKeyID,
 	}
 
-	osName, err := tryConnect(item)
+	osName, err := tryConnect(c, item)
 	if err != nil {
 		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
 	}
@@ -67,7 +72,8 @@ func update(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
 
 	id := c.Params("id")
 	exist, _ := repo.Exists(id)
@@ -87,7 +93,7 @@ func update(c *fiber.Ctx) error {
 		AltKeyID: body.AltKeyID,
 	}
 
-	osName, err := tryConnect(item)
+	osName, err := tryConnect(c, item)
 	if err != nil {
 		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
 	}
@@ -101,7 +107,8 @@ func update(c *fiber.Ctx) error {
 }
 
 func delete(c *fiber.Ctx) error {
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
 
 	id := c.Params("id")
 	exist, _ := repo.Exists(id)

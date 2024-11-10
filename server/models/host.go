@@ -14,6 +14,9 @@ const (
 type Host struct {
 	Model
 
+	OwnerID string `json:"userId" gorm:"index:hosts_owner_id_idx;type:varchar(26)"`
+	Owner   User   `json:"user" gorm:"foreignKey:OwnerID"`
+
 	Type     string            `json:"type" gorm:"not null;index:hosts_type_idx;type:varchar(16)"`
 	Label    string            `json:"label"`
 	Host     string            `json:"host" gorm:"type:varchar(64)"`
@@ -53,4 +56,15 @@ func (h *Host) DecryptKeys() (*HostDecrypted, error) {
 	}
 
 	return res, nil
+}
+
+type HostHasAccessOptions struct {
+	UserID string
+}
+
+func (h *Host) HasAccess(o HostHasAccessOptions) bool {
+	if o.UserID == h.OwnerID {
+		return true
+	}
+	return false
 }

@@ -20,7 +20,7 @@ const useThemeStore = create(
       },
     }),
     {
-      name: "theme",
+      name: "vaulterm:theme",
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

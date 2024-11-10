@@ -9,7 +9,7 @@ import (
 
 type Auth struct{ db *gorm.DB }
 
-func NewAuthRepository() *Auth {
+func NewRepository() *Auth {
 	return &Auth{db: db.Get()}
 }
 

@@ -1,3 +1,4 @@
+import authStore from "@/stores/auth";
 import { QueryClient } from "@tanstack/react-query";
 import { ofetch } from "ofetch";
 
@@ -6,7 +7,18 @@ export const BASE_WS_URL = BASE_API_URL.replace("http", "ws");
 
 const api = ofetch.create({
   baseURL: BASE_API_URL,
+  onRequest: (config) => {
+    const authToken = authStore.getState().token;
+    if (authToken) {
+      config.options.headers.set("Authorization", `Bearer ${authToken}`);
+    }
+  },
   onResponseError: (error) => {
+    if (error.response.status === 401 && !!authStore.getState().token) {
+      authStore.setState({ token: null });
+      throw new Error("Unauthorized");
+    }
+
     if (error.response._data) {
       const message = error.response._data.message;
       throw new Error(message || "Something went wrong");

@@ -9,7 +9,7 @@ import (
 	"rul.sh/vaulterm/utils"
 )
 
-func Router(app *fiber.App) {
+func Router(app fiber.Router) {
 	router := app.Group("/keychains")
 
 	router.Get("/", getAll)
@@ -25,7 +25,9 @@ type GetAllResult struct {
 func getAll(c *fiber.Ctx) error {
 	withData := c.Query("withData")
 
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Keychains{User: user})
+
 	rows, err := repo.GetAll()
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
@@ -62,11 +64,13 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Keychains{User: user})
 
 	item := &models.Keychain{
-		Type:  body.Type,
-		Label: body.Label,
+		OwnerID: user.ID,
+		Type:    body.Type,
+		Label:   body.Label,
 	}
 
 	if err := item.EncryptData(body.Data); err != nil {
@@ -86,7 +90,9 @@ func update(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	repo := NewRepository()
+	user := utils.GetUser(c)
+	repo := NewRepository(&Keychains{User: user})
+
 	id := c.Params("id")
 
 	exist, _ := repo.Exists(id)

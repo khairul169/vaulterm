@@ -12,7 +12,7 @@ const authStore = createStore(
       token: null,
     }),
     {
-      name: "auth",
+      name: "vaulterm:auth",
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

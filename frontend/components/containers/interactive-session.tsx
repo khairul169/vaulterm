@@ -2,6 +2,7 @@ import React from "react";
 import Terminal from "./terminal";
 import { BASE_WS_URL } from "@/lib/api";
 import VNCViewer from "./vncviewer";
+import { useAuthStore } from "@/stores/auth";
 
 type SSHSessionProps = {
   type: "ssh";
@@ -28,7 +29,8 @@ export type InteractiveSessionProps = {
 } & (SSHSessionProps | PVESessionProps | IncusSessionProps);
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
-  const query = new URLSearchParams(params);
+  const { token } = useAuthStore();
+  const query = new URLSearchParams({ ...params, sid: token || "" });
   const url = `${BASE_WS_URL}/ws/term?${query}`;
 
   switch (type) {
