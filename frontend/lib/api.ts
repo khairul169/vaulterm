@@ -1,13 +1,18 @@
+import { getCurrentServer } from "@/stores/app";
 import authStore from "@/stores/auth";
 import { QueryClient } from "@tanstack/react-query";
 import { ofetch } from "ofetch";
 
-export const BASE_API_URL = process.env.EXPO_PUBLIC_API_URL || ""; //"http://10.0.0.100:3000";
-export const BASE_WS_URL = BASE_API_URL.replace("http", "ws");
-
 const api = ofetch.create({
-  baseURL: BASE_API_URL,
   onRequest: (config) => {
+    const server = getCurrentServer();
+    if (!server) {
+      throw new Error("No server selected");
+    }
+
+    // set server url
+    config.options.baseURL = server.url;
+
     const authToken = authStore.getState().token;
     if (authToken) {
       config.options.headers.set("Authorization", `Bearer ${authToken}`);

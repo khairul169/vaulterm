@@ -1,13 +1,13 @@
 import React from "react";
 import { Redirect } from "expo-router";
 import { useTermSession } from "@/stores/terminal-sessions";
-import { useAppStore } from "@/stores/app";
+import { useServer } from "@/stores/app";
 
 export default function index() {
   const { sessions, curSession } = useTermSession();
-  const { servers, curServer } = useAppStore();
+  const curServer = useServer();
 
-  if (!servers.length || !curServer) {
+  if (!curServer) {
     return <Redirect href="/server" />;
   }
 

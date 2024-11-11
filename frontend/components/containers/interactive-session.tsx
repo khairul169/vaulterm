@@ -1,8 +1,8 @@
 import React from "react";
 import Terminal from "./terminal";
-import { BASE_WS_URL } from "@/lib/api";
 import VNCViewer from "./vncviewer";
 import { useAuthStore } from "@/stores/auth";
+import { AppServer, useServer } from "@/stores/app";
 
 type SSHSessionProps = {
   type: "ssh";
@@ -30,8 +30,9 @@ export type InteractiveSessionProps = {
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
   const { token } = useAuthStore();
+  const server = useServer();
   const query = new URLSearchParams({ ...params, sid: token || "" });
-  const url = `${BASE_WS_URL}/ws/term?${query}`;
+  const url = `${getBaseUrl(server)}/ws/term?${query}`;
 
   switch (type) {
     case "ssh":
@@ -49,5 +50,9 @@ const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
       throw new Error("Unknown interactive session type");
   }
 };
+
+function getBaseUrl(server?: AppServer | null) {
+  return server?.url.replace("http://", "ws://") || "";
+}
 
 export default InteractiveSession;

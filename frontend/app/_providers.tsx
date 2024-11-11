@@ -12,7 +12,7 @@ import { router, usePathname, useRootNavigationState } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
 import { PortalProvider } from "tamagui";
 import { queryClient } from "@/lib/api";
-import { useAppStore } from "@/stores/app";
+import { useServer } from "@/stores/app";
 
 type Props = PropsWithChildren;
 
@@ -54,7 +54,7 @@ const AuthProvider = () => {
   const pathname = usePathname();
   const rootNavigationState = useRootNavigationState();
   const { isLoggedIn } = useAuthStore();
-  const { curServer } = useAppStore();
+  const curServer = useServer();
 
   useEffect(() => {
     if (!rootNavigationState?.key) {

@@ -2,7 +2,7 @@ import { createStore, useStore } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type AppServer = {
+export type AppServer = {
   name?: string;
   url: string;
 };
@@ -51,12 +51,15 @@ export function setActiveServer(idx: number) {
   appStore.setState({ curServerIdx: idx });
 }
 
-export const useAppStore = () => {
-  const state = useStore(appStore);
-  const curServer =
-    state.curServerIdx != null ? state.servers[state.curServerIdx] : null;
+export function getCurrentServer() {
+  const state = appStore.getState();
+  return state.curServerIdx != null ? state.servers[state.curServerIdx] : null;
+}
 
-  return { ...state, curServer };
+export const useServer = () => {
+  const servers = useStore(appStore, (i) => i.servers);
+  const idx = useStore(appStore, (i) => i.curServerIdx);
+  return servers.length > 0 && idx != null ? servers[idx] : null;
 };
 
 export default appStore;

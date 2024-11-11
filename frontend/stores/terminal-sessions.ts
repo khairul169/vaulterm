@@ -13,7 +13,7 @@ type TerminalSessionsStore = {
   setSession: (idx: number) => void;
 };
 
-export const useTermSession = create(
+const termSessionStore = create(
   persist<TerminalSessionsStore>(
     (set) => ({
       sessions: [],
@@ -44,3 +44,7 @@ export const useTermSession = create(
     }
   )
 );
+
+export const useTermSession = termSessionStore;
+
+export default termSessionStore;

@@ -66,10 +66,19 @@ export default function LoginPage() {
           <ErrorAlert error={login.error} />
 
           <FormField vertical label="Username/Email">
-            <InputField form={form} name="username" />
+            <InputField
+              form={form}
+              name="username"
+              onSubmitEditing={onSubmit}
+            />
           </FormField>
           <FormField vertical label="Password">
-            <InputField form={form} name="password" secureTextEntry />
+            <InputField
+              form={form}
+              name="password"
+              secureTextEntry
+              onSubmitEditing={onSubmit}
+            />
           </FormField>
 
           <Separator />
