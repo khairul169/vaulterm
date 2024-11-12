@@ -12,6 +12,7 @@ import { ofetch } from "ofetch";
 import { z } from "zod";
 import { ErrorAlert } from "@/components/ui/alert";
 import { addServer } from "@/stores/app";
+import tamaguiConfig from "@/tamagui.config";
 
 export default function ServerPage() {
   const form = useZForm(serverSchema);
@@ -41,7 +42,7 @@ export default function ServerPage() {
         options={{
           contentStyle: {
             width: "100%",
-            maxWidth: 600,
+            maxWidth: tamaguiConfig.media.xs.maxWidth,
             marginHorizontal: "auto",
           },
           title: "Vaulterm",

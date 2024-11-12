@@ -28,7 +28,18 @@ func seedUsers(tx *gorm.DB) error {
 		return err
 	}
 
-	userList := []models.User{
+	teams := []*models.Team{
+		{
+			Name: "My Team",
+			Icon: "☘️",
+		},
+	}
+
+	if res := tx.Create(&teams); res.Error != nil {
+		return res.Error
+	}
+
+	userList := []*models.User{
 		{
 			Name:     "Admin",
 			Username: "admin",
@@ -42,9 +53,25 @@ func seedUsers(tx *gorm.DB) error {
 			Password: testPasswd,
 			Email:    "user@mail.com",
 		},
+		{
+			Name:     "Mary Doe",
+			Username: "user2",
+			Password: testPasswd,
+			Email:    "user2@mail.com",
+		},
 	}
 
 	if res := tx.Create(&userList); res.Error != nil {
+		return res.Error
+	}
+
+	teamMembers := []models.TeamMembers{
+		{TeamID: teams[0].ID, UserID: userList[0].ID, Role: "owner"},
+		{TeamID: teams[0].ID, UserID: userList[1].ID, Role: "admin"},
+		{TeamID: teams[0].ID, UserID: userList[2].ID, Role: "user"},
+	}
+
+	if res := tx.Create(&teamMembers); res.Error != nil {
 		return res.Error
 	}
 
@@ -54,10 +81,11 @@ func seedUsers(tx *gorm.DB) error {
 func runSeeders(db *gorm.DB) {
 	db.Transaction(func(tx *gorm.DB) error {
 		for _, seed := range seeders {
-			if err := seed(db); err != nil {
+			if err := seed(tx); err != nil {
 				return err
 			}
 		}
+
 		return nil
 	})
 }

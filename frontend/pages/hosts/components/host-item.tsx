@@ -26,6 +26,7 @@ const HostItem = ({ host, onMultiTap, onTap, onEdit }: HostItemProps) => {
             name={host.os}
             size={18}
             mr="$2"
+            mt="$1"
             fallback="desktop-classic"
           />
 
@@ -39,9 +40,11 @@ const HostItem = ({ host, onMultiTap, onTap, onEdit }: HostItemProps) => {
           {onEdit != null && (
             <Button
               circular
-              display="none"
-              $sm={{ display: "block" }}
-              $group-hover={{ display: "block" }}
+              opacity={0}
+              $sm={{ opacity: 1 }}
+              $group-hover={{ opacity: 1 }}
+              animation="quick"
+              animateOnly={["opacity"]}
               onPress={(e) => {
                 e.stopPropagation();
                 onEdit();

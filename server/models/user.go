@@ -14,6 +14,8 @@ type User struct {
 	Email    string `json:"email" gorm:"unique"`
 	Role     string `json:"role" gorm:"default:user;not null;index:users_role_idx;type:varchar(8)"`
 
+	Teams []*Team `json:"teams" gorm:"many2many:team_members"`
+
 	Timestamps
 	SoftDeletes
 }

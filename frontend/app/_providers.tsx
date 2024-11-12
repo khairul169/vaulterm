@@ -32,6 +32,8 @@ const Providers = ({ children }: Props) => {
       colors: {
         ...base.colors,
         background: theme.background.val,
+        card: theme.background.val,
+        border: theme.borderColor.val,
       },
     };
   }, [theme, colorScheme]);

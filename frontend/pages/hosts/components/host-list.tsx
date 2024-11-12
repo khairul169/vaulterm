@@ -13,7 +13,7 @@ type HostsListProps = {
   allowEdit?: boolean;
 };
 
-const HostsList = ({ allowEdit = true }: HostsListProps) => {
+const HostList = ({ allowEdit = true }: HostsListProps) => {
   const openSession = useTermSession((i) => i.push);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
@@ -98,4 +98,4 @@ const HostsList = ({ allowEdit = true }: HostsListProps) => {
   );
 };
 
-export default React.memo(HostsList);
+export default React.memo(HostList);

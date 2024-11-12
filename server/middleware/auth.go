@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"rul.sh/vaulterm/db"
 	"rul.sh/vaulterm/models"
 )
@@ -32,7 +33,14 @@ func Auth(c *fiber.Ctx) error {
 
 func GetUserSession(sessionId string) (*models.UserSession, error) {
 	var session models.UserSession
-	res := db.Get().Joins("User").Where("user_sessions.id = ?", sessionId).First(&session)
+	res := db.Get().
+		Joins("User").
+		Preload("User.Teams", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "name", "icon")
+		}).
+		Where("user_sessions.id = ?", sessionId).
+		First(&session)
+
 	return &session, res.Error
 }
 

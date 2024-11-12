@@ -13,6 +13,7 @@ import { loginResultSchema, loginSchema } from "./schema";
 import api from "@/lib/api";
 import Icons from "@/components/ui/icons";
 import authStore from "@/stores/auth";
+import tamaguiConfig from "@/tamagui.config";
 
 export default function LoginPage() {
   const form = useZForm(loginSchema);
@@ -42,7 +43,7 @@ export default function LoginPage() {
         options={{
           contentStyle: {
             width: "100%",
-            maxWidth: 600,
+            maxWidth: tamaguiConfig.media.xs.maxWidth,
             marginHorizontal: "auto",
           },
           title: "Login",

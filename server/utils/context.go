@@ -8,7 +8,7 @@ import (
 
 type UserContext struct {
 	*models.User
-	IsAdmin bool
+	IsAdmin bool `json:"isAdmin"`
 }
 
 func getUserData(user *models.User) *UserContext {

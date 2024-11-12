@@ -1,7 +1,7 @@
 import { Button } from "tamagui";
 import React from "react";
 import Drawer from "expo-router/drawer";
-import HostsList from "./components/hosts-list";
+import HostList from "./components/host-list";
 import HostForm, { hostFormModal } from "./components/form";
 import Icons from "@/components/ui/icons";
 import { initialValues } from "./schema/form";
@@ -25,7 +25,7 @@ export default function HostsPage() {
         }}
       />
 
-      <HostsList />
+      <HostList />
       <HostForm />
       <KeyForm />
     </>

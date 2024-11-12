@@ -1,28 +1,36 @@
-import React from "react";
-import { Button, GetProps } from "tamagui";
-import Icons from "../ui/icons";
+import React, { useId } from "react";
+import { Switch, GetProps, XStack, Label } from "tamagui";
 import useThemeStore from "@/stores/theme";
+import { Ionicons } from "../ui/icons";
 
-type Props = GetProps<typeof Button> & {
+type Props = GetProps<typeof XStack> & {
   iconSize?: number;
 };
 
-const ThemeSwitcher = ({ iconSize = 24, ...props }: Props) => {
+const ThemeSwitcher = ({ iconSize = 18, ...props }: Props) => {
   const { theme, toggle } = useThemeStore();
+  const id = useId();
 
   return (
-    <Button
-      icon={
-        <Icons
-          name={
-            theme === "light" ? "white-balance-sunny" : "moon-waning-crescent"
-          }
-          size={iconSize}
-        />
-      }
-      onPress={toggle}
-      {...props}
-    />
+    <XStack alignItems="center" gap="$2">
+      <Ionicons
+        name={theme === "light" ? "moon-outline" : "sunny-outline"}
+        size={iconSize}
+      />
+      <Label htmlFor={id} flex={1} cursor="pointer">
+        {`${theme === "light" ? "Dark" : "Light"} Mode`}
+      </Label>
+      <Switch
+        id={id}
+        onPress={toggle}
+        checked={theme === "dark"}
+        size="$2"
+        cursor="pointer"
+        {...props}
+      >
+        <Switch.Thumb animation="quicker" />
+      </Switch>
+    </XStack>
   );
 };
 

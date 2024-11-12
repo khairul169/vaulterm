@@ -45,6 +45,7 @@ func Init() {
 
 	// Migrate the schema
 	db.AutoMigrate(Models...)
+	InitModels(db)
 	runSeeders(db)
 }
 

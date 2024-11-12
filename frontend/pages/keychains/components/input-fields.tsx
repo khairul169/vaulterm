@@ -16,7 +16,7 @@ export const UserTypeInputFields = ({ form }: Props) => {
         <InputField f={1} form={form} name="data.username" />
       </FormField>
       <FormField label="Password">
-        <InputField f={1} form={form} name="data.password" />
+        <InputField f={1} form={form} name="data.password" secureTextEntry />
       </FormField>
     </>
   );
@@ -32,7 +32,7 @@ export const PVETypeInputFields = ({ form }: Props) => {
         <SelectField form={form} name="data.realm" items={pveRealms} />
       </FormField>
       <FormField label="Password">
-        <InputField f={1} form={form} name="data.password" />
+        <InputField f={1} form={form} name="data.password" secureTextEntry />
       </FormField>
     </>
   );
@@ -48,7 +48,7 @@ export const RSATypeInputFields = ({ form }: Props) => {
         <TextAreaField rows={7} f={1} form={form} name="data.private" />
       </FormField>
       <FormField label="Passphrase">
-        <InputField f={1} form={form} name="data.passphrase" />
+        <InputField f={1} form={form} name="data.passphrase" secureTextEntry />
       </FormField>
     </>
   );

@@ -4,7 +4,7 @@ import PagerView from "@/components/ui/pager-view";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { Button, useMedia } from "tamagui";
 import SessionTabs from "./components/session-tabs";
-import HostsList from "../hosts/components/hosts-list";
+import HostList from "../hosts/components/host-list";
 import Drawer from "expo-router/drawer";
 import { router } from "expo-router";
 import Icons from "@/components/ui/icons";
@@ -35,7 +35,7 @@ const TerminalPage = () => {
         style={{ flex: 1 }}
         page={curSession}
         onChangePage={setSession}
-        EmptyComponent={() => <HostsList allowEdit={false} />}
+        EmptyComponent={() => <HostList allowEdit={false} />}
       >
         {sessions.map((session) => (
           <InteractiveSession key={session.id} {...session} />

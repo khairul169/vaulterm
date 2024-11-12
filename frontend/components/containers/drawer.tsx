@@ -10,27 +10,25 @@ import {
   useLinkBuilder,
 } from "@react-navigation/native";
 import { Link } from "expo-router";
-import Icons from "../ui/icons";
-import { logout } from "@/stores/auth";
+import ThemeSwitcher from "./theme-switcher";
+import UserMenuButton from "./user-menu-button";
 
 const Drawer = (props: DrawerContentComponentProps) => {
   return (
     <>
+      <View p="$4">
+        <UserMenuButton />
+      </View>
+
       <DrawerContentScrollView
-        contentContainerStyle={{ padding: 18 }}
+        contentContainerStyle={{ padding: 18, paddingTop: 0 }}
         {...props}
       >
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
 
-      <View p="$4">
-        <Button
-          justifyContent="flex-start"
-          icon={<Icons name="logout" size={16} />}
-          onPress={() => logout()}
-        >
-          Logout
-        </Button>
+      <View px="$4" py="$2">
+        <ThemeSwitcher />
       </View>
     </>
   );
