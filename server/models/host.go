@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/datatypes"
+import (
+	"gorm.io/datatypes"
+)
 
 const (
 	HostTypeSSH       = "ssh"
@@ -14,8 +16,10 @@ const (
 type Host struct {
 	Model
 
-	OwnerID string `json:"userId" gorm:"index:hosts_owner_id_idx;type:varchar(26)"`
-	Owner   User   `json:"user" gorm:"foreignKey:OwnerID"`
+	OwnerID *string `json:"userId" gorm:"type:varchar(26)"`
+	Owner   *User   `json:"user" gorm:"foreignKey:OwnerID"`
+	TeamID  *string `json:"teamId" gorm:"type:varchar(26)"`
+	Team    *Team   `json:"team" gorm:"foreignKey:TeamID"`
 
 	Type     string            `json:"type" gorm:"not null;index:hosts_type_idx;type:varchar(16)"`
 	Label    string            `json:"label"`
@@ -24,11 +28,11 @@ type Host struct {
 	OS       string            `json:"os" gorm:"type:varchar(32)"`
 	Metadata datatypes.JSONMap `json:"metadata"`
 
-	ParentID *string  `json:"parentId" gorm:"index:hosts_parent_id_idx;type:varchar(26)"`
+	ParentID *string  `json:"parentId" gorm:"type:varchar(26)"`
 	Parent   *Host    `json:"parent" gorm:"foreignKey:ParentID"`
-	KeyID    *string  `json:"keyId" gorm:"index:hosts_key_id_idx"`
+	KeyID    *string  `json:"keyId" gorm:"type:varchar(26)"`
 	Key      Keychain `json:"key" gorm:"foreignKey:KeyID"`
-	AltKeyID *string  `json:"altKeyId" gorm:"index:hosts_altkey_id_idx"`
+	AltKeyID *string  `json:"altKeyId" gorm:"type:varchar(26)"`
 	AltKey   Keychain `json:"altKey" gorm:"foreignKey:AltKeyID"`
 
 	Timestamps
@@ -58,13 +62,17 @@ func (h *Host) DecryptKeys() (*HostDecrypted, error) {
 	return res, nil
 }
 
-type HostHasAccessOptions struct {
-	UserID string
-}
-
-func (h *Host) HasAccess(o HostHasAccessOptions) bool {
-	if o.UserID == h.OwnerID {
+func (h *Host) HasAccess(user *User) bool {
+	if user.IsAdmin() {
 		return true
 	}
-	return false
+	return *h.OwnerID == user.ID || user.IsInTeam(h.TeamID)
+}
+
+func (h *Host) CanWrite(user *User) bool {
+	if user.IsAdmin() {
+		return true
+	}
+	teamRole := user.GetTeamRole(h.TeamID)
+	return *h.OwnerID == user.ID || teamRole == TeamRoleOwner || teamRole == TeamRoleAdmin
 }

@@ -11,8 +11,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { router, usePathname, useRootNavigationState } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
 import { PortalProvider } from "tamagui";
-import { queryClient } from "@/lib/api";
 import { useServer } from "@/stores/app";
+import queryClient from "@/lib/queryClient";
 
 type Props = PropsWithChildren;
 

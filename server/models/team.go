@@ -2,12 +2,18 @@ package models
 
 import "time"
 
+const (
+	TeamRoleOwner  = "owner"
+	TeamRoleAdmin  = "admin"
+	TeamRoleMember = "member"
+)
+
 type Team struct {
 	Model
 
-	Name    string  `json:"name" gorm:"type:varchar(32)"`
-	Icon    string  `json:"icon" gorm:"type:varchar(2)"`
-	Members []*User `json:"members" gorm:"many2many:team_members"`
+	Name    string         `json:"name" gorm:"type:varchar(32)"`
+	Icon    string         `json:"icon" gorm:"type:varchar(2)"`
+	Members []*TeamMembers `json:"members" gorm:"foreignKey:TeamID"`
 
 	Timestamps
 	SoftDeletes

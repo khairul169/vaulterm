@@ -1,7 +1,7 @@
 package keychains
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,17 +23,22 @@ type GetAllResult struct {
 }
 
 func getAll(c *fiber.Ctx) error {
+	teamId := c.Query("teamId")
 	withData := c.Query("withData")
 
 	user := utils.GetUser(c)
 	repo := NewRepository(&Keychains{User: user})
 
-	rows, err := repo.GetAll()
+	if teamId != "" && !user.IsInTeam(&teamId) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
+	}
+
+	rows, err := repo.GetAll(GetAllOpt{TeamID: teamId})
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	if withData != "true" {
+	if withData != "true" || (teamId != "" && !user.TeamCanWrite(&teamId)) {
 		return c.JSON(fiber.Map{"rows": rows})
 	}
 
@@ -67,8 +72,13 @@ func create(c *fiber.Ctx) error {
 	user := utils.GetUser(c)
 	repo := NewRepository(&Keychains{User: user})
 
+	if body.TeamID != nil && !user.TeamCanWrite(body.TeamID) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
+	}
+
 	item := &models.Keychain{
-		OwnerID: user.ID,
+		OwnerID: &user.ID,
+		TeamID:  body.TeamID,
 		Type:    body.Type,
 		Label:   body.Label,
 	}
@@ -94,15 +104,18 @@ func update(c *fiber.Ctx) error {
 	repo := NewRepository(&Keychains{User: user})
 
 	id := c.Params("id")
-
-	exist, _ := repo.Exists(id)
-	if !exist {
-		return utils.ResponseError(c, fmt.Errorf("key %s not found", id), 404)
+	data, _ := repo.Get(id)
+	if data == nil {
+		return utils.ResponseError(c, errors.New("key not found"), 404)
+	}
+	if !data.CanWrite(&user.User) || !user.TeamCanWrite(body.TeamID) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
 	}
 
 	item := &models.Keychain{
-		Type:  body.Type,
-		Label: body.Label,
+		TeamID: body.TeamID,
+		Type:   body.Type,
+		Label:  body.Label,
 	}
 
 	if err := item.EncryptData(body.Data); err != nil {

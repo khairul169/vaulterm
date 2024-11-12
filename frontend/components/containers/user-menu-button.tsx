@@ -11,11 +11,13 @@ import {
 } from "tamagui";
 import MenuButton from "../ui/menu-button";
 import Icons from "../ui/icons";
-import { logout } from "@/stores/auth";
+import { logout, setTeam, useTeamId } from "@/stores/auth";
 import { useUser } from "@/hooks/useUser";
 
 const UserMenuButton = () => {
   const user = useUser();
+  const teamId = useTeamId();
+  const team = user?.teams?.find((t: any) => t.id === teamId);
 
   return (
     <MenuButton
@@ -35,7 +37,7 @@ const UserMenuButton = () => {
           <View flex={1} style={{ textAlign: "left" }}>
             <Text numberOfLines={1}>{user?.name}</Text>
             <Text numberOfLines={1} fontWeight="600" mt="$1.5">
-              Personal
+              {team ? `${team.icon} ${team.name}` : "Personal"}
             </Text>
           </View>
           <Icons name="chevron-down" size={16} />
@@ -61,6 +63,7 @@ const UserMenuButton = () => {
 const TeamsMenu = () => {
   const media = useMedia();
   const user = useUser();
+  const teamId = useTeamId();
   const teams = user?.teams || [];
 
   return (
@@ -73,20 +76,30 @@ const TeamsMenu = () => {
         <ListItem
           hoverTheme
           pressTheme
-          onPress={() => console.log("logout")}
           icon={<Icons name="account-group" size={16} />}
           title="Teams"
           iconAfter={<Icons name="chevron-right" size={16} />}
         />
       }
     >
-      <MenuButton.Item
-        icon={<Icons name="account" size={16} />}
-        title="Personal"
-      />
+      {teamId != null && (
+        <MenuButton.Item
+          icon={<Icons name="account" size={16} />}
+          title="Personal"
+          onPress={() => setTeam(null)}
+        />
+      )}
 
       {teams.map((team: any) => (
-        <MenuButton.Item icon={<Text>{team.icon}</Text>} title={team.name} />
+        <MenuButton.Item
+          key={team.id}
+          icon={<Text>{team.icon}</Text>}
+          iconAfter={
+            teamId === team.id ? <Icons name="check" size={16} /> : undefined
+          }
+          title={team.name}
+          onPress={() => setTeam(team.id)}
+        />
       ))}
 
       {teams.length > 0 && <Separator width="100%" />}

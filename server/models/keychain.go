@@ -16,8 +16,10 @@ const (
 type Keychain struct {
 	Model
 
-	OwnerID string `json:"userId" gorm:"index:hosts_owner_id_idx;type:varchar(26)"`
-	Owner   User   `json:"user" gorm:"foreignKey:OwnerID"`
+	OwnerID *string `json:"userId" gorm:"type:varchar(26)"`
+	Owner   *User   `json:"user" gorm:"foreignKey:OwnerID"`
+	TeamID  *string `json:"teamId" gorm:"type:varchar(26)"`
+	Team    *Team   `json:"team" gorm:"foreignKey:TeamID"`
 
 	Label string `json:"label"`
 	Type  string `json:"type" gorm:"not null;index:keychains_type_idx;type:varchar(12)"`
@@ -54,4 +56,19 @@ func (k *Keychain) DecryptData(data interface{}) error {
 	}
 
 	return nil
+}
+
+func (k *Keychain) HasAccess(user *User) bool {
+	if user.IsAdmin() {
+		return true
+	}
+	return *k.OwnerID == user.ID || user.IsInTeam(k.TeamID)
+}
+
+func (k *Keychain) CanWrite(user *User) bool {
+	if user.IsAdmin() {
+		return true
+	}
+	teamRole := user.GetTeamRole(k.TeamID)
+	return *k.OwnerID == user.ID || teamRole == TeamRoleOwner || teamRole == TeamRoleAdmin
 }

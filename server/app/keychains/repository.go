@@ -20,10 +20,16 @@ func NewRepository(r *Keychains) *Keychains {
 	return r
 }
 
-func (r *Keychains) GetAll() ([]*models.Keychain, error) {
-	var rows []*models.Keychain
-	query := r.ACL(r.db.Order("created_at DESC"))
+func (r *Keychains) GetAll(opt GetAllOpt) ([]*models.Keychain, error) {
+	query := r.db.Order("created_at DESC")
 
+	if opt.TeamID != "" {
+		query = query.Where("keychains.team_id = ?", opt.TeamID)
+	} else {
+		query = query.Where("keychains.owner_id = ? AND keychains.team_id IS NULL", r.User.ID)
+	}
+
+	var rows []*models.Keychain
 	ret := query.Find(&rows)
 	return rows, ret.Error
 }
@@ -34,9 +40,7 @@ func (r *Keychains) Create(item *models.Keychain) error {
 
 func (r *Keychains) Get(id string) (*models.Keychain, error) {
 	var keychain models.Keychain
-	query := r.ACL(r.db.Where("id = ?", id))
-
-	if err := query.First(&keychain).Error; err != nil {
+	if err := r.db.Where("id = ?", id).First(&keychain).Error; err != nil {
 		return nil, err
 	}
 
@@ -45,8 +49,7 @@ func (r *Keychains) Get(id string) (*models.Keychain, error) {
 
 func (r *Keychains) Exists(id string) (bool, error) {
 	var count int64
-	query := r.ACL(r.db.Model(&models.Keychain{}).Where("id = ?", id))
-	ret := query.Count(&count)
+	ret := r.db.Model(&models.Keychain{}).Where("id = ?", id).Count(&count)
 	return count > 0, ret.Error
 }
 
@@ -70,14 +73,5 @@ func (r *Keychains) GetDecrypted(id string) (*KeychainDecrypted, error) {
 }
 
 func (r *Keychains) Update(id string, item *models.Keychain) error {
-	query := r.ACL(r.db.Where("id = ?", id))
-	return query.Updates(item).Error
-}
-
-func (r *Keychains) ACL(query *gorm.DB) *gorm.DB {
-	if r.User.IsAdmin {
-		return query
-	}
-
-	return query.Where("keychains.owner_id = ?", r.User.ID)
+	return r.db.Where("id = ?", id).Updates(item).Error
 }

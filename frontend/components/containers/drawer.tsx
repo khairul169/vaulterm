@@ -2,6 +2,7 @@ import React from "react";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
+  DrawerNavigationOptions as NavProps,
 } from "@react-navigation/drawer";
 import { Button, View } from "tamagui";
 import {
@@ -12,6 +13,10 @@ import {
 import { Link } from "expo-router";
 import ThemeSwitcher from "./theme-switcher";
 import UserMenuButton from "./user-menu-button";
+
+export type DrawerNavigationOptions = NavProps & {
+  hidden?: boolean | null;
+};
 
 const Drawer = (props: DrawerContentComponentProps) => {
   return (
@@ -61,7 +66,12 @@ const DrawerItemList = ({
       }
     };
 
-    const { title, drawerLabel, drawerIcon } = descriptors[route.key].options;
+    const { title, drawerLabel, drawerIcon, hidden } = descriptors[route.key]
+      .options as DrawerNavigationOptions;
+
+    if (hidden) {
+      return null;
+    }
 
     return (
       <Link key={route.key} href={buildHref(route.name, route.params) as never}>

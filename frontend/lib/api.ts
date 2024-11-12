@@ -1,6 +1,5 @@
 import { getCurrentServer } from "@/stores/app";
 import authStore from "@/stores/auth";
-import { QueryClient } from "@tanstack/react-query";
 import { ofetch } from "ofetch";
 
 const api = ofetch.create({
@@ -13,9 +12,13 @@ const api = ofetch.create({
     // set server url
     config.options.baseURL = server.url;
 
-    const authToken = authStore.getState().token;
-    if (authToken) {
-      config.options.headers.set("Authorization", `Bearer ${authToken}`);
+    const { token, teamId } = authStore.getState();
+
+    if (token) {
+      config.options.headers.set("Authorization", `Bearer ${token}`);
+    }
+    if (teamId) {
+      config.options.headers.set("X-Team-Id", teamId);
     }
   },
   onResponseError: (error) => {
@@ -30,7 +33,5 @@ const api = ofetch.create({
     }
   },
 });
-
-export const queryClient = new QueryClient();
 
 export default api;

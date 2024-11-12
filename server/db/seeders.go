@@ -66,9 +66,9 @@ func seedUsers(tx *gorm.DB) error {
 	}
 
 	teamMembers := []models.TeamMembers{
-		{TeamID: teams[0].ID, UserID: userList[0].ID, Role: "owner"},
-		{TeamID: teams[0].ID, UserID: userList[1].ID, Role: "admin"},
-		{TeamID: teams[0].ID, UserID: userList[2].ID, Role: "user"},
+		{TeamID: teams[0].ID, UserID: userList[0].ID, Role: models.TeamRoleOwner},
+		{TeamID: teams[0].ID, UserID: userList[1].ID, Role: models.TeamRoleAdmin},
+		{TeamID: teams[0].ID, UserID: userList[2].ID, Role: models.TeamRoleMember},
 	}
 
 	if res := tx.Create(&teamMembers); res.Error != nil {

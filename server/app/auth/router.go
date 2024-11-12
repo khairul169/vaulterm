@@ -54,7 +54,21 @@ func login(c *fiber.Ctx) error {
 
 func getUser(c *fiber.Ctx) error {
 	user := utils.GetUser(c)
-	return c.JSON(user)
+	teams := []TeamWithRole{}
+
+	for _, item := range user.Teams {
+		teams = append(teams, TeamWithRole{
+			ID:   item.TeamID,
+			Name: item.Team.Name,
+			Icon: item.Team.Icon,
+			Role: item.Role,
+		})
+	}
+
+	return c.JSON(&GetUserResult{
+		AuthUser: *user,
+		Teams:    teams,
+	})
 }
 
 func logout(c *fiber.Ctx) error {

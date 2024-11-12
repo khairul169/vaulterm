@@ -8,6 +8,7 @@ import { useTermSession } from "@/stores/terminal-sessions";
 import { hostFormModal } from "./form";
 import GridView from "@/components/ui/grid-view";
 import HostItem from "./host-item";
+import { useHosts } from "../hooks/query";
 
 type HostsListProps = {
   allowEdit?: boolean;
@@ -18,11 +19,7 @@ const HostList = ({ allowEdit = true }: HostsListProps) => {
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
 
-  const hosts = useQuery({
-    queryKey: ["hosts"],
-    queryFn: () => api("/hosts"),
-    select: (i) => i.rows,
-  });
+  const hosts = useHosts();
 
   const hostsList = useMemo(() => {
     let items = hosts.data || [];

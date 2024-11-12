@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"rul.sh/vaulterm/db"
 	"rul.sh/vaulterm/models"
 )
@@ -23,25 +22,35 @@ func Auth(c *fiber.Ctx) error {
 
 	session, _ := GetUserSession(sessionId)
 
-	if session != nil && session.User.ID != "" {
-		c.Locals("user", &session.User)
+	if session != nil && session.ID != "" {
+		c.Locals("user", session)
 		c.Locals("sessionId", sessionId)
 	}
 
 	return c.Next()
 }
 
-func GetUserSession(sessionId string) (*models.UserSession, error) {
-	var session models.UserSession
+type AuthUser struct {
+	models.User
+	SessionID string `json:"sessionId" gorm:"column:session_id"`
+}
+
+func GetUserSession(sessionId string) (*AuthUser, error) {
+	var session AuthUser
+
 	res := db.Get().
-		Joins("User").
-		Preload("User.Teams", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id", "name", "icon")
-		}).
+		Model(&models.User{}).
+		Joins("JOIN user_sessions ON user_sessions.user_id = users.id").
+		Preload("Teams.Team").
+		Select("users.*, user_sessions.id AS session_id").
 		Where("user_sessions.id = ?", sessionId).
 		First(&session)
 
-	return &session, res.Error
+	if res.Error != nil || session.User.ID == "" {
+		return nil, res.Error
+	}
+
+	return &session, nil
 }
 
 func Protected() func(c *fiber.Ctx) error {

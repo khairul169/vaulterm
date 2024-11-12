@@ -2,11 +2,17 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { useMedia } from "tamagui";
-import DrawerContent from "@/components/containers/drawer";
+import DrawerContent, {
+  DrawerNavigationOptions,
+} from "@/components/containers/drawer";
 import Icons from "@/components/ui/icons";
+import { useUser } from "@/hooks/useUser";
+import { useTeamId } from "@/stores/auth";
 
 export default function Layout() {
   const media = useMedia();
+  const teamId = useTeamId();
+  const user = useUser();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -29,12 +35,15 @@ export default function Layout() {
         />
         <Drawer.Screen
           name="keychains"
-          options={{
-            title: "Keychains",
-            drawerIcon: ({ size, color }) => (
-              <Icons name="key" size={size} color={color} />
-            ),
-          }}
+          options={
+            {
+              title: "Keychains",
+              hidden: teamId && !user?.teamCanWrite(teamId),
+              drawerIcon: ({ size, color }) => (
+                <Icons name="key" size={size} color={color} />
+              ),
+            } as DrawerNavigationOptions
+          }
         />
         <Drawer.Screen
           name="terminal"

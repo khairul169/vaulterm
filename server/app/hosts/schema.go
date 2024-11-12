@@ -9,7 +9,12 @@ type CreateHostSchema struct {
 	Port     int               `json:"port"`
 	Metadata datatypes.JSONMap `json:"metadata"`
 
+	TeamID   *string `json:"teamId"`
 	ParentID *string `json:"parentId"`
 	KeyID    *string `json:"keyId"`
 	AltKeyID *string `json:"altKeyId"`
+}
+
+type GetAllOpt struct {
+	TeamID string
 }

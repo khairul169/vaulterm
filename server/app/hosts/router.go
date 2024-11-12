@@ -1,6 +1,7 @@
 package hosts
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -19,10 +20,15 @@ func Router(app fiber.Router) {
 }
 
 func getAll(c *fiber.Ctx) error {
+	teamId := c.Query("teamId")
 	user := utils.GetUser(c)
 	repo := NewRepository(&Hosts{User: user})
 
-	rows, err := repo.GetAll()
+	if teamId != "" && !user.IsInTeam(&teamId) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
+	}
+
+	rows, err := repo.GetAll(GetAllOpt{TeamID: teamId})
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
@@ -41,8 +47,13 @@ func create(c *fiber.Ctx) error {
 	user := utils.GetUser(c)
 	repo := NewRepository(&Hosts{User: user})
 
+	if body.TeamID != nil && !user.TeamCanWrite(body.TeamID) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
+	}
+
 	item := &models.Host{
-		OwnerID:  user.ID,
+		OwnerID:  &user.ID,
+		TeamID:   body.TeamID,
 		Type:     body.Type,
 		Label:    body.Label,
 		Host:     body.Host,
@@ -76,13 +87,17 @@ func update(c *fiber.Ctx) error {
 	repo := NewRepository(&Hosts{User: user})
 
 	id := c.Params("id")
-	exist, _ := repo.Exists(id)
-	if !exist {
-		return utils.ResponseError(c, fmt.Errorf("host %s not found", id), 404)
+	data, _ := repo.Get(id)
+	if data == nil {
+		return utils.ResponseError(c, errors.New("host not found"), 404)
+	}
+	if !data.CanWrite(&user.User) || !user.TeamCanWrite(body.TeamID) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
 	}
 
 	item := &models.Host{
 		Model:    models.Model{ID: id},
+		TeamID:   body.TeamID,
 		Type:     body.Type,
 		Label:    body.Label,
 		Host:     body.Host,
@@ -111,9 +126,12 @@ func delete(c *fiber.Ctx) error {
 	repo := NewRepository(&Hosts{User: user})
 
 	id := c.Params("id")
-	exist, _ := repo.Exists(id)
-	if !exist {
-		return utils.ResponseError(c, fmt.Errorf("host %s not found", id), 404)
+	host, _ := repo.Get(id)
+	if host == nil {
+		return utils.ResponseError(c, errors.New("host not found"), 404)
+	}
+	if !host.CanWrite(&user.User) {
+		return utils.ResponseError(c, errors.New("no access"), 403)
 	}
 
 	if err := repo.Delete(id); err != nil {

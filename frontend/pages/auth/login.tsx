@@ -47,6 +47,7 @@ export default function LoginPage() {
             marginHorizontal: "auto",
           },
           title: "Login",
+          headerTitle: "",
           headerRight: () => (
             <ThemeSwitcher bg="$colorTransparent" $gtSm={{ mr: "$3" }} />
           ),

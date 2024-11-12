@@ -1,8 +1,19 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FormSchema } from "../schema/form";
-import api, { queryClient } from "@/lib/api";
+import api from "@/lib/api";
 import { useMemo } from "react";
 import { useKeychains } from "@/pages/keychains/hooks/query";
+import queryClient from "@/lib/queryClient";
+import { useTeamId } from "@/stores/auth";
+
+export const useHosts = () => {
+  const teamId = useTeamId();
+  return useQuery({
+    queryKey: ["hosts", teamId],
+    queryFn: () => api("/hosts", { params: { teamId } }),
+    select: (i) => i.rows,
+  });
+};
 
 export const useKeychainsOptions = () => {
   const keys = useKeychains();
@@ -20,8 +31,11 @@ export const useKeychainsOptions = () => {
 };
 
 export const useSaveHost = () => {
+  const teamId = useTeamId();
+
   return useMutation({
-    mutationFn: async (body: FormSchema) => {
+    mutationFn: async (payload: FormSchema) => {
+      const body = { teamId, ...payload };
       return body.id
         ? api(`/hosts/${body.id}`, { method: "PUT", body })
         : api(`/hosts`, { method: "POST", body });
