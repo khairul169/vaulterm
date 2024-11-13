@@ -14,6 +14,8 @@ type SSHClient struct {
 	Port                 int
 	PrivateKey           string
 	PrivateKeyPassphrase string
+
+	Conn *ssh.Client
 }
 
 type SSHClientConfig struct {
@@ -39,7 +41,7 @@ func NewSSHClient(cfg *SSHClientConfig) *SSHClient {
 	}
 }
 
-func (s *SSHClient) Connect() (*ssh.Client, error) {
+func (s *SSHClient) Connect() error {
 	// Set up SSH client configuration
 	port := s.Port
 	if port == 0 {
@@ -60,7 +62,7 @@ func (s *SSHClient) Connect() (*ssh.Client, error) {
 		}
 
 		if err != nil {
-			return nil, fmt.Errorf("unable to parse private key: %v", err)
+			return fmt.Errorf("unable to parse private key: %v", err)
 		}
 		auth = append(auth, ssh.PublicKeys(signer))
 	}
@@ -75,10 +77,18 @@ func (s *SSHClient) Connect() (*ssh.Client, error) {
 	hostName := fmt.Sprintf("%s:%d", s.HostName, port)
 	sshConn, err := ssh.Dial("tcp", hostName, sshConfig)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return sshConn, nil
+	s.Conn = sshConn
+	return nil
+}
+
+func (s *SSHClient) Close() error {
+	if s.Conn != nil {
+		return s.Conn.Close()
+	}
+	return nil
 }
 
 type PtyShellRes struct {
@@ -88,9 +98,13 @@ type PtyShellRes struct {
 	Session *ssh.Session
 }
 
-func (s *SSHClient) StartPtyShell(sshConn *ssh.Client) (res *PtyShellRes, err error) {
+func (s *SSHClient) StartPtyShell() (res *PtyShellRes, err error) {
+	if s.Conn == nil {
+		return nil, fmt.Errorf("SSH client is not connected")
+	}
+
 	// Start an SSH shell session
-	session, err := sshConn.NewSession()
+	session, err := s.Conn.NewSession()
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +141,13 @@ func (s *SSHClient) StartPtyShell(sshConn *ssh.Client) (res *PtyShellRes, err er
 	}, nil
 }
 
-func (s *SSHClient) Exec(sshConn *ssh.Client, command string) (string, error) {
+func (s *SSHClient) Exec(command string) (string, error) {
+	if s.Conn == nil {
+		return "", fmt.Errorf("SSH client is not connected")
+	}
+
 	// Start an SSH shell session
-	session, err := sshConn.NewSession()
+	session, err := s.Conn.NewSession()
 	if err != nil {
 		return "", err
 	}
@@ -144,8 +162,8 @@ func (s *SSHClient) Exec(sshConn *ssh.Client, command string) (string, error) {
 	return string(output), nil
 }
 
-func (s *SSHClient) GetOS(client *SSHClient, con *ssh.Client) (string, error) {
-	out, err := client.Exec(con, "cat /etc/os-release || uname -a || systeminfo")
+func (s *SSHClient) GetOS(client *SSHClient) (string, error) {
+	out, err := client.Exec("cat /etc/os-release || uname -a || systeminfo")
 	if err != nil {
 		return "", err
 	}

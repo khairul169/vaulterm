@@ -1,4 +1,4 @@
-package ws
+package term
 
 import (
 	"crypto/tls"

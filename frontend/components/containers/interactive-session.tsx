@@ -3,6 +3,8 @@ import Terminal from "./terminal";
 import VNCViewer from "./vncviewer";
 import { useAuthStore } from "@/stores/auth";
 import { AppServer, useServer } from "@/stores/app";
+import { useWebsocketUrl } from "@/hooks/useWebsocket";
+import ServerStatsBar from "./server-stats-bar";
 
 type SSHSessionProps = {
   type: "ssh";
@@ -30,29 +32,30 @@ export type InteractiveSessionProps = {
 
 const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
   const { token } = useAuthStore();
-  const server = useServer();
-  const query = new URLSearchParams({ ...params, sid: token || "" });
-  const url = `${getBaseUrl(server)}/ws/term?${query}`;
+  const ws = useWebsocketUrl({ ...params, sid: token || "" });
+  const termUrl = ws("term");
+  const statsUrl = ws("stats");
 
   switch (type) {
     case "ssh":
-      return <Terminal url={url} />;
+      return (
+        <>
+          <Terminal url={termUrl} />
+          <ServerStatsBar url={statsUrl} />
+        </>
+      );
 
     case "pve":
     case "incus":
       return params.client === "vnc" ? (
-        <VNCViewer url={url} />
+        <VNCViewer url={termUrl} />
       ) : (
-        <Terminal url={url} />
+        <Terminal url={termUrl} />
       );
 
     default:
       throw new Error("Unknown interactive session type");
   }
 };
-
-function getBaseUrl(server?: AppServer | null) {
-  return server?.url.replace("http://", "ws://") || "";
-}
 
 export default InteractiveSession;

@@ -1,4 +1,4 @@
-package ws
+package term
 
 import (
 	"io"
@@ -11,14 +11,13 @@ import (
 )
 
 func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) error {
-	con, err := client.Connect()
-	if err != nil {
+	if err := client.Connect(); err != nil {
 		log.Printf("error connecting to SSH: %v", err)
 		return err
 	}
-	defer con.Close()
+	defer client.Close()
 
-	shell, err := client.StartPtyShell(con)
+	shell, err := client.StartPtyShell()
 	if err != nil {
 		log.Printf("error starting SSH shell: %v", err)
 		return err

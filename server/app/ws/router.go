@@ -3,6 +3,8 @@ package ws
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"rul.sh/vaulterm/app/ws/stats"
+	"rul.sh/vaulterm/app/ws/term"
 )
 
 func Router(app fiber.Router) {
@@ -15,5 +17,6 @@ func Router(app fiber.Router) {
 		return fiber.ErrUpgradeRequired
 	})
 
-	router.Get("/term", websocket.New(HandleTerm))
+	router.Get("/term", websocket.New(term.HandleTerm))
+	router.Get("/stats", websocket.New(stats.HandleStats))
 }

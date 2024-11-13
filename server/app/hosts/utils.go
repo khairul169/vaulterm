@@ -2,6 +2,7 @@ package hosts
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/app/keychains"
@@ -40,12 +41,14 @@ func tryConnect(c *fiber.Ctx, host *models.Host) (string, error) {
 			AltKey:   altKey,
 		})
 
-		con, err := c.Connect()
-		if err != nil {
+		if err := c.Connect(); err != nil {
 			return "", err
 		}
+		defer c.Close()
 
-		os, err := c.GetOS(c, con)
+		log.Println("Test", c.Conn)
+
+		os, err := c.GetOS(c)
 		if err != nil {
 			return "", err
 		}
