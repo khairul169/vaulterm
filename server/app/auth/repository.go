@@ -13,9 +13,12 @@ func NewRepository() *Auth {
 	return &Auth{db: db.Get()}
 }
 
-func (r *Auth) FindUser(username string) (*models.User, error) {
+func (r *Auth) FindUser(username string, email string) (*models.User, error) {
 	var user models.User
-	ret := r.db.Where("username = ? OR email = ?", username, username).First(&user)
+	if email == "" {
+		email = username
+	}
+	ret := r.db.Where("username = ? OR email = ?", username, email).First(&user)
 
 	return &user, ret.Error
 }
@@ -47,4 +50,11 @@ func (r *Auth) RemoveUserSession(sessionId string, force bool) error {
 
 	res := db.Delete(&models.UserSession{ID: sessionId})
 	return res.Error
+}
+
+func (r *Auth) CreateUser(user *models.User) (string, error) {
+	if err := r.db.Create(user).Error; err != nil {
+		return "", err
+	}
+	return r.CreateUserSession(user)
 }

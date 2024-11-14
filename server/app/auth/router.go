@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/lib"
 	"rul.sh/vaulterm/middleware"
+	"rul.sh/vaulterm/models"
 	"rul.sh/vaulterm/utils"
 )
 
@@ -12,6 +13,7 @@ func Router(app *fiber.App) {
 
 	router.Post("/login", login)
 	router.Get("/user", middleware.Protected(), getUser)
+	router.Post("/register", register)
 	router.Post("/logout", middleware.Protected(), logout)
 }
 
@@ -26,7 +28,7 @@ func login(c *fiber.Ctx) error {
 		}
 	}
 
-	user, err := repo.FindUser(body.Username)
+	user, err := repo.FindUser(body.Username, "")
 	if err != nil {
 		return &fiber.Error{
 			Code:    fiber.StatusUnauthorized,
@@ -68,6 +70,49 @@ func getUser(c *fiber.Ctx) error {
 	return c.JSON(&GetUserResult{
 		AuthUser: *user,
 		Teams:    teams,
+	})
+}
+
+func register(c *fiber.Ctx) error {
+	repo := NewRepository()
+
+	var body RegisterSchema
+	if err := c.BodyParser(&body); err != nil {
+		return &fiber.Error{
+			Code:    fiber.StatusBadRequest,
+			Message: err.Error(),
+		}
+	}
+
+	exist, _ := repo.FindUser(body.Username, body.Email)
+	if exist.ID != "" {
+		return &fiber.Error{
+			Code:    fiber.StatusBadRequest,
+			Message: "Username or email already exists",
+		}
+	}
+
+	password, err := lib.HashPassword(body.Password)
+	if err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	user := &models.User{
+		Name:     body.Name,
+		Username: body.Username,
+		Email:    body.Email,
+		Password: password,
+		Role:     models.UserRoleUser,
+	}
+
+	sessionId, err := repo.CreateUser(user)
+	if err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	return c.JSON(fiber.Map{
+		"user":      user,
+		"sessionId": sessionId,
 	})
 }
 

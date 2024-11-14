@@ -17,6 +17,7 @@ const FormField = ({
     <XStack
       flexDirection={vertical ? "column" : "row"}
       alignItems={vertical ? "stretch" : "flex-start"}
+      gap={!vertical ? "$3" : undefined}
       {...props}
     >
       <Label htmlFor={htmlFor} w={120} $xs={{ w: 100 }}>
