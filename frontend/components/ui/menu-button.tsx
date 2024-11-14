@@ -1,9 +1,10 @@
 import React from "react";
+import { Platform } from "react-native";
 import {
+  Adapt,
   GetProps,
   ListItem,
   Popover,
-  styled,
   withStaticProperties,
 } from "tamagui";
 
@@ -14,7 +15,7 @@ type MenuButtonProps = GetProps<typeof Popover> & {
 };
 
 const MenuButtonFrame = ({
-  asChild,
+  asChild = true,
   trigger,
   children,
   width,
@@ -23,6 +24,20 @@ const MenuButtonFrame = ({
   return (
     <Popover size="$1" {...props}>
       <Popover.Trigger asChild={asChild}>{trigger}</Popover.Trigger>
+
+      <Adapt when="sm" platform="touch">
+        <Popover.Sheet modal dismissOnSnapToBottom snapPointsMode="fit">
+          <Popover.Sheet.Overlay
+            animation="quickest"
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+          />
+          <Popover.Sheet.Frame padding="$4">
+            {/* <Adapt.Contents /> */}
+            {children}
+          </Popover.Sheet.Frame>
+        </Popover.Sheet>
+      </Adapt>
 
       <Popover.Content
         bordered
@@ -37,11 +52,17 @@ const MenuButtonFrame = ({
   );
 };
 
-const MenuButtonItem = (props: GetProps<typeof ListItem>) => (
-  <Popover.Close asChild>
-    <ListItem hoverTheme pressTheme {...props} />
-  </Popover.Close>
-);
+const MenuButtonItem = (props: GetProps<typeof ListItem>) => {
+  if (Platform.OS === "android" || Platform.OS === "ios") {
+    return <ListItem hoverTheme pressTheme {...props} />;
+  }
+
+  return (
+    <Popover.Close asChild>
+      <ListItem hoverTheme pressTheme {...props} />
+    </Popover.Close>
+  );
+};
 
 const MenuButton = withStaticProperties(MenuButtonFrame, {
   Item: MenuButtonItem,
