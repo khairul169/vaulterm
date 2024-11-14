@@ -36,3 +36,20 @@ export const isHostnameOrIP = (value?: string | null) => {
 
 export const hostnameShape = (message: string = "Invalid hostname") =>
   z.string().refine(isHostnameOrIP, { message });
+
+export const formatDuration = (seconds: number) => {
+  const days = Math.floor(seconds / (24 * 3600));
+  seconds %= 24 * 3600;
+  const hours = Math.floor(seconds / 3600);
+  seconds %= 3600;
+  const minutes = Math.floor(seconds / 60);
+  seconds = Math.floor(seconds % 60);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days} day${days > 1 ? "s" : ""}`);
+  if (hours > 0) parts.push(`${hours} hr${hours > 1 ? "s" : ""}`);
+  if (minutes > 0) parts.push(`${minutes} min`);
+  if (seconds > 0) parts.push(`${seconds} sec`);
+
+  return parts.join(" ") || "0 seconds";
+};

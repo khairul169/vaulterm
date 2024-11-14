@@ -3,6 +3,10 @@ import { Avatar, Button, ListItem, View, YGroup } from "tamagui";
 import MenuButton from "@/components/ui/menu-button";
 import Icons from "@/components/ui/icons";
 import SearchInput from "@/components/ui/search-input";
+import { useTeamId } from "@/stores/auth";
+import { changeRoleModal } from "./change-role-form";
+import { useRemoveMemberMutation } from "../hooks/query";
+import { showDialog } from "@/hooks/useDialog";
 
 type Props = {
   members?: any[];
@@ -10,7 +14,17 @@ type Props = {
 };
 
 const MemberList = ({ members, allowWrite }: Props) => {
+  const teamId = useTeamId();
   const [search, setSearch] = useState("");
+  const remove = useRemoveMemberMutation(teamId);
+
+  const onRemove = (member: any) => {
+    showDialog({
+      title: "Remove Member",
+      description: "Are you sure you want to remove this member?",
+      onConfirm: () => remove.mutate(member.userId),
+    });
+  };
 
   const memberList = useMemo(() => {
     let items = members || [];
@@ -51,7 +65,12 @@ const MemberList = ({ members, allowWrite }: Props) => {
                 </Avatar>
               }
               iconAfter={
-                allowWrite ? <MemberActionButton member={member} /> : undefined
+                allowWrite ? (
+                  <MemberActionButton
+                    member={member}
+                    onRemove={() => onRemove(member)}
+                  />
+                ) : undefined
               }
             />
           </YGroup.Item>
@@ -63,9 +82,10 @@ const MemberList = ({ members, allowWrite }: Props) => {
 
 type MemberActionButtonProps = {
   member: any;
+  onRemove: () => void;
 };
 
-const MemberActionButton = ({ member }: MemberActionButtonProps) => (
+const MemberActionButton = ({ member, onRemove }: MemberActionButtonProps) => (
   <MenuButton
     size="$1"
     placement="bottom-end"
@@ -77,10 +97,24 @@ const MemberActionButton = ({ member }: MemberActionButtonProps) => (
       />
     }
   >
-    <MenuButton.Item icon={<Icons name="account-key" size={16} />}>
+    <MenuButton.Item
+      icon={<Icons name="account-key" size={16} />}
+      onPress={() =>
+        changeRoleModal.onOpen({
+          teamId: member.teamId,
+          userId: member.userId,
+          role: member.role,
+        })
+      }
+    >
       Change Role
     </MenuButton.Item>
-    <MenuButton.Item color="$red10" icon={<Icons name="trash-can" size={16} />}>
+
+    <MenuButton.Item
+      color="$red10"
+      icon={<Icons name="trash-can" size={16} />}
+      onPress={onRemove}
+    >
       Remove Member
     </MenuButton.Item>
   </MenuButton>

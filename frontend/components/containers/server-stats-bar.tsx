@@ -1,7 +1,8 @@
-import { View, Text, XStack, Separator } from "tamagui";
+import { View, Text, XStack, Separator, ScrollView } from "tamagui";
 import React, { useState } from "react";
 import { useWebSocket } from "@/hooks/useWebsocket";
 import Icons from "../ui/icons";
+import { formatDuration } from "@/lib/utils";
 
 type Props = {
   url: string;
@@ -12,6 +13,7 @@ const ServerStatsBar = ({ url }: Props) => {
   const [memory, setMemory] = useState({ total: 0, used: 0, available: 0 });
   const [disk, setDisk] = useState({ total: "0", used: "0", percent: "0%" });
   const [network, setNetwork] = useState({ tx: 0, rx: 0 });
+  const [uptime, setUptime] = useState(0);
 
   const { isConnected } = useWebSocket(url, {
     onMessage: (msg) => {
@@ -44,6 +46,10 @@ const ServerStatsBar = ({ url }: Props) => {
             rx: parseInt(values[1]) || 0,
           });
           break;
+
+        case "\x05":
+          setUptime(parseInt(value) || 0);
+          break;
       }
     },
   });
@@ -53,7 +59,15 @@ const ServerStatsBar = ({ url }: Props) => {
   }
 
   return (
-    <XStack gap="$1" p="$2" alignItems="center">
+    <ScrollView
+      horizontal
+      contentContainerStyle={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: "$1",
+        padding: "$2",
+      }}
+    >
       <XStack gap="$1" alignItems="center" minWidth={48}>
         <Icons name="desktop-tower" size={16} />
         <Text fontSize="$2" aria-label="CPU">
@@ -61,21 +75,18 @@ const ServerStatsBar = ({ url }: Props) => {
         </Text>
       </XStack>
 
-      <Separator vertical h="100%" mx="$2" borderColor="$color" />
-      <Icons name="memory" size={16} />
+      <Icons ml="$2" name="memory" size={16} />
       <Text fontSize="$2" aria-label="Memory">
         {memory.used} MB / {memory.total} MB (
         {Math.round((memory.used / memory.total) * 100) || 0}%)
       </Text>
 
-      <Separator vertical h="100%" mx="$2" borderColor="$color" />
-      <Icons name="harddisk" size={16} />
+      <Icons ml="$2" name="harddisk" size={16} />
       <Text fontSize="$2" aria-label="Disk">
         {disk.used} / {disk.total} ({disk.percent})
       </Text>
 
-      <Separator vertical h="100%" mx="$2" borderColor="$color" />
-      <Icons name="download" size={16} />
+      <Icons ml="$2" name="download" size={16} />
       <Text fontSize="$2" aria-label="Network Received">
         {network.rx} MB
       </Text>
@@ -83,7 +94,12 @@ const ServerStatsBar = ({ url }: Props) => {
       <Text fontSize="$2" aria-label="Network Sent">
         {network.tx} MB
       </Text>
-    </XStack>
+
+      <Icons ml="$2" name="clock" size={16} />
+      <Text fontSize="$2" aria-label="Uptime">
+        {formatDuration(uptime)}
+      </Text>
+    </ScrollView>
   );
 };
 

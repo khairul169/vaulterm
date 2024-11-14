@@ -11,4 +11,5 @@ var Models = []interface{}{
 	&models.Host{},
 	&models.Team{},
 	&models.TeamMembers{},
+	&models.TermSession{},
 }

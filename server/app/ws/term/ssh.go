@@ -1,6 +1,7 @@
 package term
 
 import (
+	"bufio"
 	"io"
 	"log"
 	"strconv"
@@ -10,67 +11,75 @@ import (
 	"rul.sh/vaulterm/lib"
 )
 
-func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) error {
+func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) ([]byte, error) {
 	if err := client.Connect(); err != nil {
 		log.Printf("error connecting to SSH: %v", err)
-		return err
+		return nil, err
 	}
 	defer client.Close()
 
 	shell, err := client.StartPtyShell()
 	if err != nil {
 		log.Printf("error starting SSH shell: %v", err)
-		return err
+		return nil, err
 	}
 
 	session := shell.Session
 	defer session.Close()
 
-	// Goroutine to send SSH stdout to WebSocket
+	sessionCapture, sessionCaptureWriter := io.Pipe()
+	defer sessionCapture.Close()
+	sessionLog := []byte{}
+
+	// Capture SSH session output
+	go func() {
+		reader := bufio.NewReader(sessionCapture)
+		for {
+			b, err := reader.ReadBytes('\n')
+			if err != nil {
+				break
+			}
+			sessionLog = append(sessionLog, b...)
+		}
+	}()
+
+	// Pass SSH stdout to WebSocket
 	go func() {
 		buf := make([]byte, 1024)
 		for {
 			n, err := shell.Stdout.Read(buf)
 			if err != nil {
-				if err != io.EOF {
-					log.Printf("error reading from SSH stdout: %v", err)
-				}
 				break
 			}
-
+			sessionCaptureWriter.Write(buf[:n])
 			if err := c.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
-				log.Printf("error writing to websocket: %v", err)
 				break
 			}
 		}
 	}()
 
-	// Goroutine to handle SSH stderr
+	// Pass SSH stderr to WebSocket
 	go func() {
 		buf := make([]byte, 1024)
 		for {
 			n, err := shell.Stderr.Read(buf)
 			if err != nil {
-				if err != io.EOF {
-					log.Printf("error reading from SSH stderr: %v", err)
-				}
 				break
 			}
+			sessionCaptureWriter.Write(buf[:n])
 			if err := c.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
-				log.Printf("error writing to websocket: %v", err)
 				break
 			}
 		}
 	}()
 
-	// Handle WebSocket to SSH data streaming
+	// Handle user input
 	go func() {
 		defer session.Close()
 
 		for {
 			_, msg, err := c.ReadMessage()
 			if err != nil {
-				log.Printf("error reading from websocket: %v", err)
 				break
 			}
 
@@ -86,15 +95,13 @@ func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) error {
 
 			shell.Stdin.Write(msg)
 		}
-
-		log.Println("SSH session closed")
 	}()
 
 	// Wait for the SSH session to close
 	if err := session.Wait(); err != nil {
 		log.Printf("SSH session ended with error: %v", err)
-		return err
+		return sessionLog, err
 	}
 
-	return nil
+	return sessionLog, nil
 }

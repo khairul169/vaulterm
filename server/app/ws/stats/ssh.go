@@ -32,11 +32,12 @@ func HandleSSHStats(c *websocket.Conn, client *lib.SSHClient) error {
 				return
 			default:
 				wg := &sync.WaitGroup{}
-				wg.Add(4)
+				wg.Add(5)
 				go getCPUUsage(client, wg, msgCh)
 				go getMemoryUsage(client, wg, msgCh)
 				go getDiskUsage(client, wg, msgCh)
 				go getNetworkUsage(client, wg, msgCh)
+				go getUptime(client, wg, msgCh)
 				wg.Wait()
 			}
 		}
@@ -63,7 +64,8 @@ func HandleSSHStats(c *websocket.Conn, client *lib.SSHClient) error {
 func getCPUUsage(client *lib.SSHClient, wg *sync.WaitGroup, result chan<- string) {
 	defer wg.Done()
 
-	cpuData, err := client.Exec("cat /proc/stat | grep '^cpu '")
+	cmd := "cat /proc/stat | grep '^cpu '"
+	cpuData, err := client.Exec(cmd)
 	if err != nil {
 		return
 	}
@@ -73,8 +75,7 @@ func getCPUUsage(client *lib.SSHClient, wg *sync.WaitGroup, result chan<- string
 	}
 
 	time.Sleep(time.Second)
-
-	cpuData, err = client.Exec("cat /proc/stat | grep '^cpu '")
+	cpuData, err = client.Exec(cmd)
 	if err != nil {
 		return
 	}
@@ -206,4 +207,27 @@ func parseNetwork(data string) (int, int) {
 	}
 
 	return txBytes, rxBytes
+}
+
+func getUptime(client *lib.SSHClient, wg *sync.WaitGroup, result chan<- string) {
+	defer wg.Done()
+
+	// Try to read uptime from /proc/uptime
+	data, err := client.Exec("cat /proc/uptime")
+	if err != nil {
+		return
+	}
+
+	data = strings.TrimSpace(data)
+	uptimeParts := strings.Split(data, " ")
+	if len(uptimeParts) < 1 {
+		return
+	}
+
+	uptimeSeconds, err := strconv.ParseFloat(uptimeParts[0], 64)
+	if err != nil {
+		return
+	}
+
+	result <- fmt.Sprintf("\x05%d", int(uptimeSeconds))
 }

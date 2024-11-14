@@ -13,6 +13,7 @@ import { useAuthStore } from "@/stores/auth";
 import { PortalProvider } from "tamagui";
 import { useServer } from "@/stores/app";
 import queryClient from "@/lib/queryClient";
+import DialogMessageProvider from "@/components/containers/dialog-message";
 
 type Props = PropsWithChildren;
 
@@ -45,6 +46,7 @@ const Providers = ({ children }: Props) => {
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
           <Theme name="blue">
             <PortalProvider shouldAddRootHost>{children}</PortalProvider>
+            <DialogMessageProvider />
           </Theme>
         </TamaguiProvider>
       </ThemeProvider>

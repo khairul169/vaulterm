@@ -5,12 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/app/users"
 	"rul.sh/vaulterm/models"
 	"rul.sh/vaulterm/utils"
 )
 
-func Router(app fiber.Router) {
+func Router(app fiber.Router) fiber.Router {
 	router := app.Group("/teams")
 
 	router.Get("/", getAll)
@@ -18,7 +17,8 @@ func Router(app fiber.Router) {
 	router.Post("/", create)
 	router.Put("/:id", update)
 	router.Delete("/:id", delete)
-	router.Post("/:id/invite", invite)
+
+	return router
 }
 
 func getAll(c *fiber.Ctx) error {
@@ -111,37 +111,6 @@ func delete(c *fiber.Ctx) error {
 	}
 
 	if err := repo.Delete(id); err != nil {
-		return utils.ResponseError(c, err, 500)
-	}
-
-	return c.JSON(true)
-}
-
-func invite(c *fiber.Ctx) error {
-	var body InviteTeamSchema
-	if err := c.BodyParser(&body); err != nil {
-		return utils.ResponseError(c, err, 500)
-	}
-
-	user := utils.GetUser(c)
-	repo := NewRepository(&Teams{User: user})
-
-	id := c.Params("id")
-	exist, _ := repo.Exists(id)
-	if !exist {
-		return utils.ResponseError(c, errors.New("team not found"), 404)
-	}
-	if !user.TeamCanWrite(&id) {
-		return utils.ResponseError(c, errors.New("no access"), 403)
-	}
-
-	userRepo := users.NewRepository(&users.Users{User: user})
-	userData, _ := userRepo.Find(body.Username)
-	if userData.ID == "" {
-		return utils.ResponseError(c, errors.New("user not found"), 404)
-	}
-
-	if err := repo.Invite(id, userData.ID, body.Role); err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
 

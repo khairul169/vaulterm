@@ -2,7 +2,6 @@ package teams
 
 import (
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"rul.sh/vaulterm/db"
 	"rul.sh/vaulterm/models"
 	"rul.sh/vaulterm/utils"
@@ -93,15 +92,4 @@ func (r *Teams) Delete(id string) error {
 		}
 		return nil
 	})
-}
-
-func (r *Teams) Invite(teamId string, userId string, role string) error {
-	ret := r.db.
-		Clauses(clause.OnConflict{DoNothing: true}).
-		Create(&models.TeamMembers{
-			TeamID: teamId,
-			UserID: userId,
-			Role:   role,
-		})
-	return ret.Error
 }

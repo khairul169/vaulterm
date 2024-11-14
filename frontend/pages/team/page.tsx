@@ -20,6 +20,7 @@ import tamaguiConfig from "@/tamagui.config";
 import MemberList from "./components/member-list";
 import { useUser } from "@/hooks/useUser";
 import InviteForm, { inviteFormModal } from "./components/invite-form";
+import ChangeRoleForm from "./components/change-role-form";
 
 export default function TeamPage() {
   const teamId = useTeamId();
@@ -71,6 +72,7 @@ export default function TeamPage() {
         <MemberList members={data?.members} allowWrite={canWrite} />
 
         <InviteForm />
+        <ChangeRoleForm />
       </ScrollView>
     </>
   );

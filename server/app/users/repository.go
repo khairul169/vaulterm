@@ -26,3 +26,10 @@ func (r *Users) Find(username string) (*models.User, error) {
 
 	return &user, ret.Error
 }
+
+func (r *Users) Get(id string) (*models.User, error) {
+	var user models.User
+	ret := r.db.Preload("Teams").Where("id = ?", id).First(&user)
+
+	return &user, ret.Error
+}

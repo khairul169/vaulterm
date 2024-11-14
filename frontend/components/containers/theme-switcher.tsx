@@ -18,7 +18,7 @@ const ThemeSwitcher = ({ iconSize = 18, ...props }: Props) => {
         size={iconSize}
       />
       <Label htmlFor={id} flex={1} cursor="pointer">
-        {`${theme === "light" ? "Dark" : "Light"} Mode`}
+        Dark Mode
       </Label>
       <Switch
         id={id}

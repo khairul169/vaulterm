@@ -9,10 +9,12 @@ export const teamFormSchema = z.object({
 
 export type TeamFormSchema = z.infer<typeof teamFormSchema>;
 
+const teamRoles = ["owner", "admin", "member"] as const;
+
 export const inviteSchema = z.object({
   teamId: z.string().ulid(),
   username: z.string().min(1, { message: "Username/email is required" }),
-  role: z.enum(["owner", "admin", "member"], {
+  role: z.enum(teamRoles, {
     errorMap: () => ({ message: "Role is required" }),
   }),
 });
@@ -24,3 +26,13 @@ export const teamMemberRoles: SelectItem[] = [
 ];
 
 export type InviteSchema = z.infer<typeof inviteSchema>;
+
+export const setRoleSchema = z.object({
+  teamId: z.string().ulid(),
+  userId: z.string().ulid(),
+  role: z.enum(teamRoles, {
+    errorMap: () => ({ message: "Role is required" }),
+  }),
+});
+
+export type SetRoleSchema = z.infer<typeof setRoleSchema>;

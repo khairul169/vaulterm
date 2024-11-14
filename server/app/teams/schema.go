@@ -9,8 +9,3 @@ type GetOptions struct {
 	ID          string
 	WithMembers bool
 }
-
-type InviteTeamSchema struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
-}

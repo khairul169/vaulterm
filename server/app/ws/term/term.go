@@ -2,9 +2,11 @@ package term
 
 import (
 	"log"
+	"time"
 
 	"github.com/gofiber/contrib/websocket"
 	"rul.sh/vaulterm/app/hosts"
+	"rul.sh/vaulterm/db"
 	"rul.sh/vaulterm/lib"
 	"rul.sh/vaulterm/models"
 	"rul.sh/vaulterm/utils"
@@ -23,9 +25,19 @@ func HandleTerm(c *websocket.Conn) {
 		return
 	}
 
+	log := ""
+	term := &models.TermSession{
+		UserID: user.ID,
+		HostID: hostId,
+		Reason: c.Query("reason"),
+	}
+	if err := db.Get().Create(term).Error; err != nil {
+		return
+	}
+
 	switch data.Host.Type {
 	case "ssh":
-		sshHandler(c, data)
+		sshHandler(c, data, &log)
 	case "pve":
 		pveHandler(c, data)
 	case "incus":
@@ -33,9 +45,18 @@ func HandleTerm(c *websocket.Conn) {
 	default:
 		c.WriteMessage(websocket.TextMessage, []byte("Invalid host type"))
 	}
+
+	// save session log
+	endsAt := time.Now()
+	db.Get().
+		Where("id = ?", term.ID).
+		Updates(&models.TermSession{
+			EndsAt: &endsAt,
+			Log:    log,
+		})
 }
 
-func sshHandler(c *websocket.Conn, data *models.HostDecrypted) {
+func sshHandler(c *websocket.Conn, data *models.HostDecrypted, log *string) {
 	cfg := lib.NewSSHClient(&lib.SSHClientConfig{
 		HostName: data.Host.Host,
 		Port:     data.Port,
@@ -43,8 +64,14 @@ func sshHandler(c *websocket.Conn, data *models.HostDecrypted) {
 		AltKey:   data.AltKey,
 	})
 
-	if err := NewSSHWebsocketSession(c, cfg); err != nil {
+	out, err := NewSSHWebsocketSession(c, cfg)
+	if err != nil {
 		c.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	}
+
+	// copy output
+	if log != nil {
+		*log = string(out)
 	}
 }
 
