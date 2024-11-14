@@ -56,27 +56,33 @@ const ServerStatsBar = ({ url }: Props) => {
     <XStack gap="$1" p="$2" alignItems="center">
       <XStack gap="$1" alignItems="center" minWidth={48}>
         <Icons name="desktop-tower" size={16} />
-        <Text fontSize="$2">{Math.round(cpu)}%</Text>
+        <Text fontSize="$2" aria-label="CPU">
+          {Math.round(cpu)}%
+        </Text>
       </XStack>
 
       <Separator vertical h="100%" mx="$2" borderColor="$color" />
       <Icons name="memory" size={16} />
-      <Text fontSize="$2">
+      <Text fontSize="$2" aria-label="Memory">
         {memory.used} MB / {memory.total} MB (
         {Math.round((memory.used / memory.total) * 100) || 0}%)
       </Text>
 
       <Separator vertical h="100%" mx="$2" borderColor="$color" />
       <Icons name="harddisk" size={16} />
-      <Text fontSize="$2">
+      <Text fontSize="$2" aria-label="Disk">
         {disk.used} / {disk.total} ({disk.percent})
       </Text>
 
       <Separator vertical h="100%" mx="$2" borderColor="$color" />
       <Icons name="download" size={16} />
-      <Text fontSize="$2">{network.rx} MB</Text>
+      <Text fontSize="$2" aria-label="Network Received">
+        {network.rx} MB
+      </Text>
       <Icons name="upload" size={16} />
-      <Text fontSize="$2">{network.tx} MB</Text>
+      <Text fontSize="$2" aria-label="Network Sent">
+        {network.tx} MB
+      </Text>
     </XStack>
   );
 };

@@ -1,7 +1,5 @@
 import { View, Text, Spinner } from "tamagui";
 import React, { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { useNavigation } from "expo-router";
 import SearchInput from "@/components/ui/search-input";
 import { useTermSession } from "@/stores/terminal-sessions";

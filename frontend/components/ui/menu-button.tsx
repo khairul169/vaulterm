@@ -21,7 +21,7 @@ const MenuButtonFrame = ({
   ...props
 }: MenuButtonProps) => {
   return (
-    <Popover {...props}>
+    <Popover size="$1" {...props}>
       <Popover.Trigger asChild={asChild}>{trigger}</Popover.Trigger>
 
       <Popover.Content

@@ -56,14 +56,14 @@ func (r *Hosts) Exists(id string) (bool, error) {
 	return count > 0, ret.Error
 }
 
-func (r *Hosts) Delete(id string) error {
-	return r.db.Delete(&models.Host{Model: models.Model{ID: id}}).Error
-}
-
 func (r *Hosts) Create(item *models.Host) error {
 	return r.db.Create(item).Error
 }
 
 func (r *Hosts) Update(id string, item *models.Host) error {
 	return r.db.Where("id = ?", id).Updates(item).Error
+}
+
+func (r *Hosts) Delete(id string) error {
+	return r.db.Delete(&models.Host{Model: models.Model{ID: id}}).Error
 }

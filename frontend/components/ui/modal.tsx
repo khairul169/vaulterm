@@ -9,6 +9,7 @@ type ModalProps = {
   description?: string;
   children?: React.ReactNode;
   width?: number | string;
+  maxHeight?: number | string;
 };
 
 const Modal = ({
@@ -17,6 +18,7 @@ const Modal = ({
   title,
   description,
   width = 512,
+  maxHeight = 600,
 }: ModalProps) => {
   const { open, onOpenChange } = disclosure.use();
 
@@ -64,7 +66,7 @@ const Modal = ({
           width="90%"
           maxWidth={width}
           height="90%"
-          maxHeight={600}
+          maxHeight={maxHeight}
         >
           <View p="$4">
             <Dialog.Title>{title}</Dialog.Title>

@@ -21,7 +21,7 @@ type Team struct {
 
 type TeamMembers struct {
 	TeamID    string    `json:"teamId" gorm:"primarykey;type:varchar(26)"`
-	Team      Team      `json:"team"`
+	Team      Team      `json:"-"`
 	UserID    string    `json:"userId" gorm:"primarykey;type:varchar(26)"`
 	User      User      `json:"user"`
 	Role      string    `json:"role" gorm:"type:varchar(16)"`

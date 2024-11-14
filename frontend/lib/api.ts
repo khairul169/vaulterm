@@ -1,5 +1,5 @@
 import { getCurrentServer } from "@/stores/app";
-import authStore from "@/stores/auth";
+import authStore, { logout } from "@/stores/auth";
 import { ofetch } from "ofetch";
 
 const api = ofetch.create({
@@ -23,7 +23,7 @@ const api = ofetch.create({
   },
   onResponseError: (error) => {
     if (error.response.status === 401 && !!authStore.getState().token) {
-      authStore.setState({ token: null });
+      logout();
       throw new Error("Unauthorized");
     }
 

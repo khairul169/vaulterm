@@ -13,6 +13,7 @@ import MenuButton from "../ui/menu-button";
 import Icons from "../ui/icons";
 import { logout, setTeam, useTeamId } from "@/stores/auth";
 import { useUser } from "@/hooks/useUser";
+import TeamForm, { teamFormModal } from "@/pages/team/components/team-form";
 
 const UserMenuButton = () => {
   const user = useUser();
@@ -20,43 +21,46 @@ const UserMenuButton = () => {
   const team = user?.teams?.find((t: any) => t.id === teamId);
 
   return (
-    <MenuButton
-      size="$1"
-      placement="bottom-end"
-      width={213}
-      trigger={
-        <Button
-          bg="$colorTransparent"
-          justifyContent="flex-start"
-          p={0}
-          gap="$1"
-        >
-          <Avatar circular size="$3">
-            <Avatar.Fallback bg="$blue4" />
-          </Avatar>
-          <View flex={1} style={{ textAlign: "left" }}>
-            <Text numberOfLines={1}>{user?.name}</Text>
-            <Text numberOfLines={1} fontWeight="600" mt="$1.5">
-              {team ? `${team.icon} ${team.name}` : "Personal"}
-            </Text>
-          </View>
-          <Icons name="chevron-down" size={16} />
-        </Button>
-      }
-    >
-      <TeamsMenu />
-      <MenuButton.Item
-        onPress={() => console.log("logout")}
-        icon={<Icons name="account" size={16} />}
-        title="Account"
-      />
-      <Separator w="100%" />
-      <MenuButton.Item
-        onPress={() => logout()}
-        icon={<Icons name="logout" size={16} />}
-        title="Logout"
-      />
-    </MenuButton>
+    <>
+      <MenuButton
+        size="$1"
+        placement="bottom-end"
+        width={213}
+        trigger={
+          <Button
+            bg="$colorTransparent"
+            justifyContent="flex-start"
+            p={0}
+            gap="$1"
+          >
+            <Avatar circular size="$3">
+              <Avatar.Fallback bg="$blue4" />
+            </Avatar>
+            <View flex={1} style={{ textAlign: "left" }}>
+              <Text numberOfLines={1}>{user?.name}</Text>
+              <Text numberOfLines={1} fontWeight="600" mt="$1.5">
+                {team ? `${team.icon} ${team.name}` : "Personal"}
+              </Text>
+            </View>
+            <Icons name="chevron-down" size={16} />
+          </Button>
+        }
+      >
+        <TeamsMenu />
+        <MenuButton.Item
+          onPress={() => console.log("logout")}
+          icon={<Icons name="account" size={16} />}
+          title="Account"
+        />
+        <Separator w="100%" />
+        <MenuButton.Item
+          onPress={() => logout()}
+          icon={<Icons name="logout" size={16} />}
+          title="Logout"
+        />
+      </MenuButton>
+      <TeamForm />
+    </>
   );
 };
 
@@ -107,6 +111,7 @@ const TeamsMenu = () => {
       <MenuButton.Item
         icon={<Icons name="plus" size={16} />}
         title="Create Team"
+        onPress={() => teamFormModal.onOpen({ icon: "🍃", name: "" })}
       />
     </MenuButton>
   );

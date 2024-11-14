@@ -6,22 +6,21 @@ import HostForm, { hostFormModal } from "./components/form";
 import Icons from "@/components/ui/icons";
 import { initialValues } from "./schema/form";
 import KeyForm from "../keychains/components/form";
+import { useUser } from "@/hooks/useUser";
+import { useTeamId } from "@/stores/auth";
 
 export default function HostsPage() {
+  const teamId = useTeamId();
+  const user = useUser();
+
   return (
     <>
       <Drawer.Screen
         options={{
-          headerRight: () => (
-            <Button
-              bg="$colorTransparent"
-              icon={<Icons name="plus" size={24} />}
-              onPress={() => hostFormModal.onOpen(initialValues)}
-              $gtSm={{ mr: "$3" }}
-            >
-              New
-            </Button>
-          ),
+          headerRight:
+            !teamId || user?.teamCanWrite(teamId)
+              ? () => <AddButton />
+              : undefined,
         }}
       />
 
@@ -31,3 +30,14 @@ export default function HostsPage() {
     </>
   );
 }
+
+const AddButton = () => (
+  <Button
+    bg="$colorTransparent"
+    icon={<Icons name="plus" size={24} />}
+    onPress={() => hostFormModal.onOpen(initialValues)}
+    $gtSm={{ mr: "$3" }}
+  >
+    New
+  </Button>
+);

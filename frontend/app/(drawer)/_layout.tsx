@@ -55,6 +55,18 @@ export default function Layout() {
             ),
           }}
         />
+        <Drawer.Screen
+          name="team"
+          options={
+            {
+              title: "Team",
+              hidden: !teamId,
+              drawerIcon: ({ size, color }) => (
+                <Icons name="account-group" size={size} color={color} />
+              ),
+            } as DrawerNavigationOptions
+          }
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
