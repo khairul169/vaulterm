@@ -32,6 +32,7 @@ const Modal = ({
           zIndex={999}
           modal
           dismissOnSnapToBottom
+          snapPoints={[40, 60, 0]}
           // disableDrag
         >
           <Sheet.Overlay

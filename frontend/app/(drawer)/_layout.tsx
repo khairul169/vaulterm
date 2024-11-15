@@ -22,6 +22,7 @@ export default function Layout() {
           drawerType: media.sm ? "front" : "permanent",
           drawerStyle: { width: 250 },
           headerLeft: media.sm ? undefined : () => null,
+          headerStyle: {elevation: 0, borderBottomWidth: 0}
         }}
       >
         <Drawer.Screen

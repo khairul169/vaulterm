@@ -17,7 +17,7 @@ export const InputField = <T extends FieldValues>({
     name={name}
     render={({ field, fieldState }) => (
       <>
-        <Input {...field} {...props} />
+        <Input {...field} onChangeText={field.onChange} {...props} />
         <ErrorMessage error={fieldState.error} />
       </>
     )}

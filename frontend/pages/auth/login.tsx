@@ -58,6 +58,7 @@ export default function LoginPage() {
             <InputField
               form={form}
               name="username"
+              autoCapitalize="none"
               onSubmitEditing={onSubmit}
             />
           </FormField>
@@ -65,6 +66,7 @@ export default function LoginPage() {
             <InputField
               form={form}
               name="password"
+              autoCapitalize="none"
               secureTextEntry
               onSubmitEditing={onSubmit}
             />

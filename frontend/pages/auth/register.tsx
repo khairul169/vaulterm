@@ -48,25 +48,36 @@ const RegisterPage = () => {
           <ErrorAlert error={register.error} />
 
           <FormField label="Full Name">
-            <InputField form={form} name="name" />
+            <InputField form={form} name="name" autoCapitalize="words" />
           </FormField>
 
           <FormField label="Username">
-            <InputField form={form} name="username" />
+            <InputField form={form} name="username" autoCapitalize="none" />
           </FormField>
 
           <FormField label="Email Address">
-            <InputField form={form} name="email" />
+            <InputField
+              form={form}
+              name="email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
           </FormField>
 
           <FormField label="Password">
-            <InputField form={form} name="password" secureTextEntry />
+            <InputField
+              form={form}
+              name="password"
+              autoCapitalize="none"
+              secureTextEntry
+            />
           </FormField>
 
           <FormField label="Confirm Password">
             <InputField
               form={form}
               name="confirmPassword"
+              autoCapitalize="none"
               secureTextEntry
               onSubmitEditing={onSubmit}
             />

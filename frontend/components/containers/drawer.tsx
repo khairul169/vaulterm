@@ -13,14 +13,17 @@ import {
 import { Link } from "expo-router";
 import ThemeSwitcher from "./theme-switcher";
 import UserMenuButton from "./user-menu-button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type DrawerNavigationOptions = NavProps & {
   hidden?: boolean | null;
 };
 
 const Drawer = (props: DrawerContentComponentProps) => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <>
+    <View pt={insets.top} flex={1}>
       <View p="$4">
         <UserMenuButton />
       </View>
@@ -35,7 +38,7 @@ const Drawer = (props: DrawerContentComponentProps) => {
       <View px="$4" py="$2">
         <ThemeSwitcher />
       </View>
-    </>
+    </View>
   );
 };
 
@@ -81,6 +84,8 @@ const DrawerItemList = ({
           bg={focused ? "$background" : "$colorTransparent"}
           onPress={onPress}
           icon={drawerIcon?.({ size: 16, color: "$color", focused }) as never}
+          size="$4"
+          $xs={{ size: "$5", borderRadius: 999, borderWidth: 0 }}
         >
           {drawerLabel !== undefined
             ? drawerLabel
