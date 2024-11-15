@@ -13,7 +13,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"rul.sh/vaulterm/app"
+	"rul.sh/vaulterm/server/app"
 )
 
 type HTTPTest struct {

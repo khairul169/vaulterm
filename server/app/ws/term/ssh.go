@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/contrib/websocket"
-	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/server/lib"
 )
 
 func NewSSHWebsocketSession(c *websocket.Conn, client *lib.SSHClient) ([]byte, error) {

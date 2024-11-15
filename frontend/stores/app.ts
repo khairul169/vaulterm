@@ -8,15 +8,17 @@ export type AppServer = {
 };
 
 type AppStore = {
+  localServer?: string | null;
   servers: AppServer[];
-  curServerIdx?: number | null;
+  curServer?: string | null;
 };
 
 const appStore = createStore(
   persist<AppStore>(
     () => ({
+      localServer: null,
       servers: [],
-      curServerIdx: null,
+      curServer: null,
     }),
     {
       name: "vaulterm:app",
@@ -30,36 +32,42 @@ export function addServer(srv: AppServer, setActive?: boolean) {
   const isExist = curServers.findIndex((s) => s.url === srv.url);
 
   if (isExist >= 0) {
-    setActiveServer(isExist);
+    setCurrentServer(srv.url);
     return;
   }
 
   appStore.setState((state) => ({
     servers: [...state.servers, srv],
-    curServerIdx: setActive ? state.servers.length : state.curServerIdx,
+    curServer: setActive ? srv.url : state.curServer,
   }));
 }
 
 export function removeServer(idx: number) {
   appStore.setState((state) => ({
     servers: state.servers.filter((_, i) => i !== idx),
-    curServerIdx: state.curServerIdx === idx ? null : state.curServerIdx,
   }));
 }
 
-export function setActiveServer(idx: number) {
-  appStore.setState({ curServerIdx: idx });
+export function setCurrentServer(url: string) {
+  appStore.setState({ curServer: url });
 }
 
 export function getCurrentServer() {
-  const state = appStore.getState();
-  return state.curServerIdx != null ? state.servers[state.curServerIdx] : null;
+  return appStore.getState().curServer;
+}
+
+export function setLocalServer(url: string) {
+  appStore.setState((state) => ({
+    localServer: url,
+    curServer:
+      !state.curServer || state.curServer === state.localServer
+        ? url
+        : state.curServer,
+  }));
 }
 
 export const useServer = () => {
-  const servers = useStore(appStore, (i) => i.servers);
-  const idx = useStore(appStore, (i) => i.curServerIdx);
-  return servers.length > 0 && idx != null ? servers[idx] : null;
+  return useStore(appStore, (i) => i.curServer);
 };
 
 export default appStore;

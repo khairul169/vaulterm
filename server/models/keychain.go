@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/server/lib"
 )
 
 const (

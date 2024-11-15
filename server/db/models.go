@@ -1,7 +1,7 @@
 package db
 
 import (
-	"rul.sh/vaulterm/models"
+	"rul.sh/vaulterm/server/models"
 )
 
 var Models = []interface{}{

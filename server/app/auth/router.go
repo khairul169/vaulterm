@@ -2,10 +2,10 @@ package auth
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/lib"
-	"rul.sh/vaulterm/middleware"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/middleware"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func Router(app *fiber.App) {

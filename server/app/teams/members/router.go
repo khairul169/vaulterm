@@ -4,10 +4,10 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/app/teams"
-	"rul.sh/vaulterm/app/users"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/app/teams"
+	"rul.sh/vaulterm/server/app/users"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func Router(app fiber.Router) {

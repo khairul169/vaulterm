@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"rul.sh/vaulterm/db"
+	"rul.sh/vaulterm/server/db"
 )
 
 func TestMain(m *testing.M) {

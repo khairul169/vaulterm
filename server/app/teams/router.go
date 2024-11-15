@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func Router(app fiber.Router) fiber.Router {

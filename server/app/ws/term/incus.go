@@ -9,7 +9,7 @@ import (
 
 	fastWs "github.com/fasthttp/websocket"
 	"github.com/gofiber/contrib/websocket"
-	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/server/lib"
 )
 
 type IncusWebsocketSession struct {

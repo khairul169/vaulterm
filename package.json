@@ -1,0 +1,25 @@
+{
+  "name": "vaulterm",
+  "version": "1.0.0",
+  "author": "Khairul Hidayat",
+  "license": "MIT",
+  "description": "Your Unified Vault for Remote Access",
+  "scripts": {
+    "test": "go test -count 1 -p 1 -v rul.sh/vaulterm/server/tests",
+    "dev": "wails dev -s -tags \"gui\"",
+    "build": "cross-env CGO_ENABLED=1 wails build -tags \"gui\" -m -skipbindings -s",
+    "build:frontend": "cd frontend && npm run build:web",
+    "build:server": "cross-env CGO_ENABLED=1 go build -o vaulterm ."
+  },
+  "keywords": [
+    "vaulterm",
+    "ssh",
+    "vnc",
+    "incus",
+    "remote-access",
+    "terminal"
+  ],
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
