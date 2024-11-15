@@ -3,7 +3,7 @@ import tamaguiConfig from "@/tamagui.config";
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { TamaguiProvider, Theme } from "@tamagui/core";
 import useThemeStore from "@/stores/theme";
@@ -15,9 +15,19 @@ import { useServer } from "@/stores/app";
 import queryClient from "@/lib/queryClient";
 import DialogMessageProvider from "@/components/containers/dialog-message";
 
-type Props = PropsWithChildren;
+const Providers = ({ children }: PropsWithChildren) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider />
+      <ThemeProvider>
+        {children}
+        <DialogMessageProvider />
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
-const Providers = ({ children }: Props) => {
+const ThemeProvider = ({ children }: PropsWithChildren) => {
   const colorScheme = useThemeStore((i) => i.theme);
 
   const theme = useMemo(() => {
@@ -40,17 +50,13 @@ const Providers = ({ children }: Props) => {
   }, [theme, colorScheme]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider />
-      <ThemeProvider value={navTheme}>
-        <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
-          <Theme name="blue">
-            <PortalProvider shouldAddRootHost>{children}</PortalProvider>
-            <DialogMessageProvider />
-          </Theme>
-        </TamaguiProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <NavThemeProvider value={navTheme}>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme}>
+        <Theme name="blue">
+          <PortalProvider shouldAddRootHost>{children}</PortalProvider>
+        </Theme>
+      </TamaguiProvider>
+    </NavThemeProvider>
   );
 };
 

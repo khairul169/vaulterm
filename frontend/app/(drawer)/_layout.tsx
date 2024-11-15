@@ -20,9 +20,12 @@ export default function Layout() {
         drawerContent={DrawerContent}
         screenOptions={{
           drawerType: media.sm ? "front" : "permanent",
-          drawerStyle: { width: 250 },
+          drawerStyle: {
+            width: !media.sm ? 250 : "80%",
+            padding: 0,
+          },
           headerLeft: media.sm ? undefined : () => null,
-          headerStyle: {elevation: 0, borderBottomWidth: 0}
+          headerStyle: { elevation: 0, borderBottomWidth: 0 },
         }}
       >
         <Drawer.Screen

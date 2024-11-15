@@ -2,6 +2,7 @@ import React from "react";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { Button, ScrollView, View } from "tamagui";
 import Icons from "@/components/ui/icons";
+import { router } from "expo-router";
 
 const SessionTabs = () => {
   const { sessions, curSession, setSession, remove } = useTermSession();
@@ -50,7 +51,7 @@ const SessionTabs = () => {
       ))}
 
       <Button
-        onPress={() => setSession(-1)}
+        onPress={() => router.push("/hosts")}
         size="$2.5"
         bg="$colorTransparent"
         circular

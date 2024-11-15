@@ -63,7 +63,7 @@ const SessionsPage = () => {
               icon={<Icons name="connection" size={16} />}
               onPress={() => {
                 router.back();
-                setTimeout(() => setSession(idx), 20);
+                setSession(idx);
               }}
             >
               {session.label}

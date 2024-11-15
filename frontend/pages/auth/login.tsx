@@ -33,9 +33,7 @@ export default function LoginPage() {
           },
           title: "Login",
           headerTitle: "",
-          headerRight: () => (
-            <ThemeSwitcher bg="$colorTransparent" $gtSm={{ mr: "$3" }} />
-          ),
+          headerRight: () => <ThemeSwitcher $gtSm={{ mr: "$3" }} />,
         }}
       />
 

@@ -1,52 +1,30 @@
-import { useDebounceCallback } from "@/hooks/useDebounce";
-import React, { ComponentPropsWithoutRef, useEffect, useRef } from "react";
+import React, { ComponentPropsWithoutRef, forwardRef } from "react";
 import RNPagerView from "react-native-pager-view";
 
 export type PagerViewProps = ComponentPropsWithoutRef<typeof RNPagerView> & {
-  page?: number;
   onChangePage?: (page: number) => void;
-  EmptyComponent?: () => JSX.Element;
 };
 
-const PagerView = ({
-  page,
-  onChangePage,
-  EmptyComponent,
-  children,
-  ...props
-}: PagerViewProps) => {
-  const ref = useRef<RNPagerView>(null);
-
-  const [onPageSelect, clearPageSelectDebounce] = useDebounceCallback(
-    (page) => onChangePage?.(page),
-    300
-  );
-
-  const [setPage] = useDebounceCallback((page) => {
-    ref.current?.setPage(page);
-    clearPageSelectDebounce();
-  }, 100);
-
-  useEffect(() => {
-    if (page != null) {
-      const npage = EmptyComponent != null ? page + 1 : page;
-      setPage(npage);
-    }
-  }, [page, EmptyComponent]);
-
-  return (
-    <RNPagerView
-      ref={ref}
-      {...props}
-      onPageSelected={(e) => {
-        const pos = e.nativeEvent.position;
-        onPageSelect(EmptyComponent ? pos - 1 : pos);
-      }}
-    >
-      {EmptyComponent ? <EmptyComponent key="-1" /> : null}
-      {children}
-    </RNPagerView>
-  );
+export type PagerViewRef = {
+  setPage: (page: number) => void;
+  setPageWithoutAnimation: (page: number) => void;
 };
+
+const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
+  ({ onChangePage, children, ...props }, ref) => {
+    return (
+      <RNPagerView
+        ref={ref as never}
+        {...props}
+        onPageSelected={(e) => {
+          const pos = e.nativeEvent.position;
+          onChangePage?.(pos);
+        }}
+      >
+        {children}
+      </RNPagerView>
+    );
+  }
+);
 
 export default PagerView;

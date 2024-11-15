@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 export const useDebounceCallback = <T extends (...args: any[]) => any>(
   callback: T,
@@ -24,5 +24,5 @@ export const useDebounceCallback = <T extends (...args: any[]) => any>(
     [delay, clear]
   );
 
-  return [fn, clear] as const;
+  return fn;
 };

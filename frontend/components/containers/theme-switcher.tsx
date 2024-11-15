@@ -12,21 +12,28 @@ const ThemeSwitcher = ({ iconSize = 18, ...props }: Props) => {
   const id = useId();
 
   return (
-    <XStack alignItems="center" gap="$2">
-      <Ionicons
-        name={theme === "light" ? "moon-outline" : "sunny-outline"}
-        size={iconSize}
-      />
-      <Label htmlFor={id} flex={1} cursor="pointer">
-        Dark Mode
-      </Label>
+    <XStack
+      alignItems="center"
+      gap="$4"
+      w="auto"
+      justifyContent="space-between"
+      {...props}
+    >
+      <XStack alignItems="center" gap="$2">
+        <Ionicons
+          name={theme === "light" ? "moon-outline" : "sunny-outline"}
+          size={iconSize}
+        />
+        <Label htmlFor={id} cursor="pointer">
+          Dark Mode
+        </Label>
+      </XStack>
       <Switch
         id={id}
         onPress={toggle}
         checked={theme === "dark"}
         size="$2"
         cursor="pointer"
-        {...props}
       >
         <Switch.Thumb animation="quicker" />
       </Switch>

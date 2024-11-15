@@ -55,6 +55,7 @@ const Terminal = ({ client = "xtermjs", style, ...props }: TerminalProps) => {
         horizontal
         flexGrow={0}
         contentContainerStyle={{ flexDirection: "row" }}
+        $gtSm={{ display: "none" }}
       >
         <TerminalButton
           title={<Icons name="swap-horizontal" size={16} />}

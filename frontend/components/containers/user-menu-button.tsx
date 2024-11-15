@@ -7,7 +7,6 @@ import {
   Text,
   useMedia,
   View,
-  YGroup,
 } from "tamagui";
 import MenuButton from "../ui/menu-button";
 import Icons from "../ui/icons";
@@ -29,8 +28,11 @@ const UserMenuButton = () => {
         trigger={
           <Button
             bg="$colorTransparent"
+            borderWidth={0}
             justifyContent="flex-start"
-            p={0}
+            borderRadius="$10"
+            py={0}
+            px="$2"
             gap="$1"
           >
             <Avatar circular size="$3">
@@ -42,7 +44,7 @@ const UserMenuButton = () => {
                 {team ? `${team.icon} ${team.name}` : "Personal"}
               </Text>
             </View>
-            <Icons name="chevron-down" size={16} />
+            <Icons name="chevron-down" size={16} mr="$2" />
           </Button>
         }
       >
@@ -59,6 +61,7 @@ const UserMenuButton = () => {
           title="Logout"
         />
       </MenuButton>
+
       <TeamForm />
     </>
   );

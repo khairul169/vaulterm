@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import InteractiveSession from "@/components/containers/interactive-session";
-import PagerView from "@/components/ui/pager-view";
+import PagerView, { PagerViewRef } from "@/components/ui/pager-view";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { Button, useMedia } from "tamagui";
 import SessionTabs from "./components/session-tabs";
@@ -8,11 +8,39 @@ import HostList from "../hosts/components/host-list";
 import Drawer from "expo-router/drawer";
 import { router } from "expo-router";
 import Icons from "@/components/ui/icons";
+import { useDebounceCallback } from "@/hooks/useDebounce";
 
 const TerminalPage = () => {
+  const pagerViewRef = useRef<PagerViewRef>(null!);
   const { sessions, curSession, setSession } = useTermSession();
   const session = sessions[curSession];
   const media = useMedia();
+
+  const setCurSession = useDebounceCallback((idx: number) => {
+    pagerViewRef.current?.setPage(idx);
+  }, 100);
+
+  useEffect(() => {
+    setCurSession(curSession);
+  }, [curSession]);
+
+  const pagerView = useMemo(() => {
+    if (!sessions.length) {
+      return null;
+    }
+    return (
+      <PagerView
+        ref={pagerViewRef}
+        style={{ flex: 1 }}
+        onChangePage={setSession}
+        initialPage={0}
+      >
+        {sessions.map((session) => (
+          <InteractiveSession key={session.id} {...session} />
+        ))}
+      </PagerView>
+    );
+  }, [sessions]);
 
   return (
     <>
@@ -30,17 +58,7 @@ const TerminalPage = () => {
       />
 
       {sessions.length > 0 && media.gtSm ? <SessionTabs /> : null}
-
-      <PagerView
-        style={{ flex: 1 }}
-        page={curSession}
-        onChangePage={setSession}
-        EmptyComponent={() => <HostList allowEdit={false} />}
-      >
-        {sessions.map((session) => (
-          <InteractiveSession key={session.id} {...session} />
-        ))}
-      </PagerView>
+      {!sessions.length ? <HostList allowEdit={false} /> : pagerView}
     </>
   );
 };

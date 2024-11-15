@@ -4,7 +4,7 @@ import {
   DrawerContentScrollView,
   DrawerNavigationOptions as NavProps,
 } from "@react-navigation/drawer";
-import { Button, View } from "tamagui";
+import { Button, Text, View } from "tamagui";
 import {
   CommonActions,
   DrawerActions,
@@ -24,19 +24,25 @@ const Drawer = (props: DrawerContentComponentProps) => {
 
   return (
     <View pt={insets.top} flex={1}>
-      <View p="$4">
+      <View py="$4" px="$2">
         <UserMenuButton />
       </View>
 
       <DrawerContentScrollView
-        contentContainerStyle={{ padding: 18, paddingTop: 0 }}
+        contentContainerStyle={{
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingStart: 0,
+          paddingRight: 18,
+          paddingBottom: 18,
+        }}
         {...props}
       >
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
 
       <View px="$4" py="$2">
-        <ThemeSwitcher />
+        <ThemeSwitcher $xs={{ alignSelf: "flex-start" }} />
       </View>
     </View>
   );
@@ -85,7 +91,11 @@ const DrawerItemList = ({
           onPress={onPress}
           icon={drawerIcon?.({ size: 16, color: "$color", focused }) as never}
           size="$4"
-          $xs={{ size: "$5", borderRadius: 999, borderWidth: 0 }}
+          $xs={{ size: "$5" }}
+          borderRadius={0}
+          borderTopRightRadius="$10"
+          borderBottomRightRadius="$10"
+          borderWidth={0}
         >
           {drawerLabel !== undefined
             ? drawerLabel

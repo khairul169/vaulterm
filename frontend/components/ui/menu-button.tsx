@@ -25,7 +25,7 @@ const MenuButtonFrame = ({
     <Popover size="$1" {...props}>
       <Popover.Trigger asChild={asChild}>{trigger}</Popover.Trigger>
 
-      <Adapt when="sm" platform="touch">
+      {/* <Adapt when="sm" platform="touch">
         <Popover.Sheet modal dismissOnSnapToBottom snapPointsMode="fit">
           <Popover.Sheet.Overlay
             animation="quickest"
@@ -33,11 +33,10 @@ const MenuButtonFrame = ({
             exitStyle={{ opacity: 0 }}
           />
           <Popover.Sheet.Frame padding="$4">
-            {/* <Adapt.Contents /> */}
-            {children}
+            <Adapt.Contents />
           </Popover.Sheet.Frame>
         </Popover.Sheet>
-      </Adapt>
+      </Adapt> */}
 
       <Popover.Content
         bordered
@@ -53,12 +52,8 @@ const MenuButtonFrame = ({
 };
 
 const MenuButtonItem = (props: GetProps<typeof ListItem>) => {
-  if (Platform.OS === "android" || Platform.OS === "ios") {
-    return <ListItem hoverTheme pressTheme {...props} />;
-  }
-
   return (
-    <Popover.Close asChild>
+    <Popover.Close flexDirection="row" asChild>
       <ListItem hoverTheme pressTheme {...props} />
     </Popover.Close>
   );

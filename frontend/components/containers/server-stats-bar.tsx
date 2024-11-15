@@ -61,6 +61,7 @@ const ServerStatsBar = ({ url }: Props) => {
   return (
     <ScrollView
       horizontal
+      flexGrow={0}
       contentContainerStyle={{
         flexDirection: "row",
         alignItems: "center",

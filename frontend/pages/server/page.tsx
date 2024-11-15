@@ -46,9 +46,7 @@ export default function ServerPage() {
             marginHorizontal: "auto",
           },
           title: "Vaulterm",
-          headerRight: () => (
-            <ThemeSwitcher bg="$colorTransparent" $gtSm={{ mr: "$3" }} />
-          ),
+          headerRight: () => <ThemeSwitcher $gtSm={{ mr: "$3" }} />,
         }}
       />
 
@@ -66,7 +64,13 @@ export default function ServerPage() {
           <ErrorAlert error={serverConnect.error} />
 
           <FormField vertical label="URL">
-            <InputField form={form} name="url" placeholder="https://" />
+            <InputField
+              form={form}
+              name="url"
+              autoCapitalize="none"
+              keyboardType="url"
+              placeholder="https://"
+            />
           </FormField>
 
           <Button onPress={onSubmit} isLoading={serverConnect.isPending}>
