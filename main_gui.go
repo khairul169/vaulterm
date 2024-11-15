@@ -12,6 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/application"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	srv "rul.sh/vaulterm/server/app"
 )
 
@@ -36,6 +37,9 @@ func main() {
 			appCtx.startup(ctx)
 		},
 		Bind: []interface{}{appCtx},
+		Mac: &mac.Options{
+			WebviewIsTransparent: true,
+		},
 	})
 
 	// Run the local server

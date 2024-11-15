@@ -4,3 +4,4 @@ tmp/
 .env
 /data.db*
 Vaulterm-res.syso
+.DS_Store
