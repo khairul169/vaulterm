@@ -1,6 +1,9 @@
 package app
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
@@ -13,8 +16,15 @@ import (
 func NewApp() *fiber.App {
 	// Load deps
 	utils.CheckAndCreateEnvFile()
-	godotenv.Load()
-	db.Init()
+	godotenv.Load(utils.GetDataPath(".env"))
+
+	dbUrl := os.Getenv("DATABASE_URL")
+	if dbUrl == "" {
+		// WAL: _journal_mode=WAL
+		dbPath := utils.GetDataPath("data.db")
+		dbUrl = fmt.Sprintf("file:%s?cache=shared&mode=rwc", dbPath)
+	}
+	db.Init(dbUrl)
 
 	// Create fiber app
 	app := fiber.New(fiber.Config{ErrorHandler: ErrorHandler})

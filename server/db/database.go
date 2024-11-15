@@ -2,7 +2,6 @@ package db
 
 import (
 	"log"
-	"os"
 	"strings"
 
 	"gorm.io/driver/postgres"
@@ -19,14 +18,8 @@ func Get() *gorm.DB {
 	return dbInstance
 }
 
-func Init() {
+func Init(dsn string) {
 	// log.Println("Initializing database...")
-
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		// WAL: _journal_mode=WAL
-		dsn = "file:data.db?cache=shared&mode=rwc"
-	}
 
 	// Open db connection
 	var con gorm.Dialector
