@@ -2,9 +2,9 @@ package auth
 
 import (
 	"gorm.io/gorm"
-	"rul.sh/vaulterm/db"
-	"rul.sh/vaulterm/lib"
-	"rul.sh/vaulterm/models"
+	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/models"
 )
 
 type Auth struct{ db *gorm.DB }

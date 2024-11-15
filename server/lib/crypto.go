@@ -138,3 +138,13 @@ func Decrypt(encrypted string) (string, error) {
 
 	return string(res), nil
 }
+
+// Function to generate a 32-byte random key for AES-256
+func GenerateRandomKey() (string, error) {
+	key := make([]byte, 32) // 32 bytes = 256 bits
+	_, err := rand.Read(key)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(key), nil
+}

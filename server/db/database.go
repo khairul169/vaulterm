@@ -24,7 +24,8 @@ func Init() {
 
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "file:data.db?cache=shared&mode=rwc&_journal_mode=WAL"
+		// WAL: _journal_mode=WAL
+		dsn = "file:data.db?cache=shared&mode=rwc"
 	}
 
 	// Open db connection

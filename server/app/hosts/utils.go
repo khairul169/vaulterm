@@ -2,13 +2,12 @@ package hosts
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/app/keychains"
-	"rul.sh/vaulterm/lib"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/app/keychains"
+	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func tryConnect(c *fiber.Ctx, host *models.Host) (string, error) {
@@ -45,8 +44,6 @@ func tryConnect(c *fiber.Ctx, host *models.Host) (string, error) {
 			return "", err
 		}
 		defer c.Close()
-
-		log.Println("Test", c.Conn)
 
 		os, err := c.GetOS(c)
 		if err != nil {

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gofiber/contrib/websocket"
-	"rul.sh/vaulterm/lib"
+	"rul.sh/vaulterm/server/lib"
 )
 
 func HandleSSHStats(c *websocket.Conn, client *lib.SSHClient) error {

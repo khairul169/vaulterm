@@ -3,8 +3,8 @@ package ws
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/app/ws/stats"
-	"rul.sh/vaulterm/app/ws/term"
+	"rul.sh/vaulterm/server/app/ws/stats"
+	"rul.sh/vaulterm/server/app/ws/term"
 )
 
 func Router(app fiber.Router) {

@@ -4,13 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"rul.sh/vaulterm/app/auth"
-	"rul.sh/vaulterm/db"
-	"rul.sh/vaulterm/middleware"
+	"rul.sh/vaulterm/server/app/auth"
+	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/middleware"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func NewApp() *fiber.App {
 	// Load deps
+	utils.CheckAndCreateEnvFile()
 	godotenv.Load()
 	db.Init()
 

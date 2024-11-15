@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Vaulterm",
+  "author": {
+    "name": "Khairul Hidayat",
+    "email": "khai@rul.sh"
+  },
+  "outputfilename": "vaulterm",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build:web",
+  "frontend:dev:watcher": "pnpm run start",
+  "frontend:dev:serverUrl": "http://localhost:8081",
+  "wailsjsdir": "frontend/lib"
+}

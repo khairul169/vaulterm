@@ -10,7 +10,7 @@ const api = ofetch.create({
     }
 
     // set server url
-    config.options.baseURL = server.url;
+    config.options.baseURL = server;
 
     const { token, teamId } = authStore.getState();
 

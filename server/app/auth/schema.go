@@ -1,6 +1,6 @@
 package auth
 
-import "rul.sh/vaulterm/middleware"
+import "rul.sh/vaulterm/server/middleware"
 
 type LoginSchema struct {
 	Username string `json:"username"`

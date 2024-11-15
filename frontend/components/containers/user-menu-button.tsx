@@ -38,9 +38,9 @@ const UserMenuButton = () => {
             <Avatar circular size="$3">
               <Avatar.Fallback bg="$blue4" />
             </Avatar>
-            <View flex={1} style={{ textAlign: "left" }}>
-              <Text numberOfLines={1}>{user?.name}</Text>
-              <Text numberOfLines={1} fontWeight="600" mt="$1.5">
+            <View flex={1}>
+              <Text textAlign='left' numberOfLines={1}>{user?.name}</Text>
+              <Text textAlign='left' numberOfLines={1} fontWeight="600" mt="$1.5">
                 {team ? `${team.icon} ${team.name}` : "Personal"}
               </Text>
             </View>

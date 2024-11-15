@@ -1,6 +1,5 @@
 import { useServer } from "@/stores/app";
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type UseWebsocketOptions = {
   onMessage?: (message: string) => void;
@@ -50,7 +49,8 @@ export const useWebSocket = (url: string, opt?: UseWebsocketOptions) => {
 
 export const useWebsocketUrl = (initParams: any = {}) => {
   const server = useServer();
-  const baseUrl = server?.url.replace("http://", "ws://") || "";
+  const baseUrl =
+    server?.replace("http://", "ws://").replace("https://", "wss://") || "";
 
   return (url: string, params: any = {}) => {
     const query = new URLSearchParams({ ...initParams, ...params });

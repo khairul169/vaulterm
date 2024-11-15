@@ -2,8 +2,8 @@ package db
 
 import (
 	"gorm.io/gorm"
-	"rul.sh/vaulterm/lib"
-	"rul.sh/vaulterm/models"
+	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/models"
 )
 
 type SeedFn func(*gorm.DB) error

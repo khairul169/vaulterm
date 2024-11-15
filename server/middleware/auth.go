@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/db"
-	"rul.sh/vaulterm/models"
+	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/models"
 )
 
 func Auth(c *fiber.Ctx) error {
@@ -36,6 +37,10 @@ type AuthUser struct {
 }
 
 func GetUserSession(sessionId string) (*AuthUser, error) {
+	if sessionId == "" {
+		return nil, errors.New("sessionid is empty")
+	}
+
 	var session AuthUser
 
 	res := db.Get().

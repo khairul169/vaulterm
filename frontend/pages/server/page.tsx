@@ -11,11 +11,14 @@ import { useMutation } from "@tanstack/react-query";
 import { ofetch } from "ofetch";
 import { z } from "zod";
 import { ErrorAlert } from "@/components/ui/alert";
-import { addServer } from "@/stores/app";
+import appStore, { addServer, setCurrentServer } from "@/stores/app";
 import tamaguiConfig from "@/tamagui.config";
+import { useStore } from "zustand";
+import Icons from "@/components/ui/icons";
 
 export default function ServerPage() {
   const form = useZForm(serverSchema);
+  const localServer = useStore(appStore, (i) => i.localServer);
 
   const serverConnect = useMutation({
     mutationFn: async (body: z.infer<typeof serverSchema>) => {
@@ -35,6 +38,13 @@ export default function ServerPage() {
   const onSubmit = form.handleSubmit((values) => {
     serverConnect.mutate(values);
   });
+
+  const onUseLocalServer = () => {
+    if (localServer) {
+      setCurrentServer(localServer);
+      router.replace("/auth/login");
+    }
+  };
 
   return (
     <>
@@ -73,9 +83,20 @@ export default function ServerPage() {
             />
           </FormField>
 
-          <Button onPress={onSubmit} isLoading={serverConnect.isPending}>
+          <Button
+            onPress={onSubmit}
+            icon={<Icons name="desktop-classic" size={16} />}
+            isLoading={serverConnect.isPending}
+          >
             Connect
           </Button>
+
+          {localServer != null && (
+            <>
+              <Text textAlign="center">or</Text>
+              <Button onPress={onUseLocalServer}>Use Local Server</Button>
+            </>
+          )}
         </Card>
       </ScrollView>
     </>

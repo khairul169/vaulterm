@@ -3,9 +3,9 @@ package members
 import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"rul.sh/vaulterm/db"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 type TeamMembers struct {

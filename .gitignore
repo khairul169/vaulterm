@@ -1,0 +1,6 @@
+build/bin
+node_modules
+tmp/
+.env
+/data.db*
+Vaulterm-res.syso

@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"rul.sh/vaulterm/middleware"
+	"rul.sh/vaulterm/server/middleware"
 )
 
 type UserContext = middleware.AuthUser

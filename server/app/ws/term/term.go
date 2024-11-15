@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gofiber/contrib/websocket"
-	"rul.sh/vaulterm/app/hosts"
-	"rul.sh/vaulterm/db"
-	"rul.sh/vaulterm/lib"
-	"rul.sh/vaulterm/models"
-	"rul.sh/vaulterm/utils"
+	"rul.sh/vaulterm/server/app/hosts"
+	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 func HandleTerm(c *websocket.Conn) {
