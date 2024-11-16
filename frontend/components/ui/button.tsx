@@ -1,5 +1,6 @@
 import React from "react";
 import { GetProps, Button as BaseButton, Spinner } from "tamagui";
+import Icons from "./icons";
 
 type ButtonProps = GetProps<typeof BaseButton> & {
   isDisabled?: boolean;
@@ -15,5 +16,15 @@ const Button = ({ icon, isLoading, isDisabled, ...props }: ButtonProps) => {
     />
   );
 };
+
+export const BackButton = (props: GetProps<typeof Button>) => (
+  <Button
+    circular
+    bg="$colorTransparent"
+    icon={<Icons name="arrow-left" size={24} />}
+    mr={6}
+    {...props}
+  />
+);
 
 export default Button;

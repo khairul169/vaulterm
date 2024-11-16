@@ -149,7 +149,13 @@ func getDiskUsage(client *lib.SSHClient, wg *sync.WaitGroup, result chan<- strin
 		return
 	}
 
-	fields := strings.Fields(lines[1])
+	fields := strings.Fields(lines[len(lines)-2])
+	if len(fields) < 5 {
+		return
+	}
+	if !strings.HasPrefix(fields[0], "/") {
+		fields = append([]string{"/"}, fields...)
+	}
 	result <- fmt.Sprintf("\x03%s,%s,%s", fields[1], fields[2], fields[4])
 }
 

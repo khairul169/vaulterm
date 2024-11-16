@@ -58,6 +58,7 @@ export default function LoginPage() {
               name="username"
               autoCapitalize="none"
               onSubmitEditing={onSubmit}
+              autoFocus
             />
           </FormField>
           <FormField vertical label="Password">

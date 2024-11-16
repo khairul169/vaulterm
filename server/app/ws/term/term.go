@@ -17,7 +17,7 @@ func HandleTerm(c *websocket.Conn) {
 
 	user := utils.GetUserWs(c)
 	hostRepo := hosts.NewRepository(&hosts.Hosts{User: user})
-	data, err := hostRepo.Get(hostId)
+	data, err := hostRepo.GetWithKeys(hostId)
 
 	if data == nil || !data.HasAccess(&user.User) {
 		log.Printf("Cannot find host! %v\n", err)

@@ -47,22 +47,30 @@ const HostForm = () => {
           <InputField f={1} form={form} name="label" placeholder="Label..." />
         </FormField>
 
-        <FormField label="Hostname">
-          <InputField form={form} name="host" placeholder="IP or hostname..." />
-        </FormField>
-
         <FormField label="Type">
           <SelectField form={form} name="type" items={typeOptions} />
         </FormField>
 
-        <FormField label="Port">
-          <InputField
-            form={form}
-            name="port"
-            keyboardType="number-pad"
-            placeholder="Port"
-          />
-        </FormField>
+        {type !== "group" && (
+          <>
+            <FormField label="Hostname">
+              <InputField
+                form={form}
+                name="host"
+                placeholder="IP or hostname..."
+              />
+            </FormField>
+
+            <FormField label="Port">
+              <InputField
+                form={form}
+                name="port"
+                keyboardType="number-pad"
+                placeholder="Port"
+              />
+            </FormField>
+          </>
+        )}
 
         {type === "ssh" ? (
           <SSHFormFields form={form} />

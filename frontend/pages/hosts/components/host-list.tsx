@@ -1,26 +1,36 @@
-import { View, Text, Spinner } from "tamagui";
+import { View, Text, Spinner, ScrollView } from "tamagui";
 import React, { useMemo, useState } from "react";
 import { useNavigation } from "expo-router";
 import SearchInput from "@/components/ui/search-input";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { hostFormModal } from "./form";
-import GridView from "@/components/ui/grid-view";
+import { GridLayout } from "@/components/ui/grid-view";
 import HostItem from "./host-item";
 import { useHosts } from "../hooks/query";
 
 type HostsListProps = {
   allowEdit?: boolean;
+  parentId?: string | null;
+  onParentIdChange?: (id: string | null) => void;
+  selected?: string[];
+  onSelectedChange?: (ids: string[]) => void;
 };
 
-const HostList = ({ allowEdit = true }: HostsListProps) => {
+const HostList = ({
+  allowEdit = true,
+  parentId,
+  onParentIdChange,
+  selected = [],
+  onSelectedChange,
+}: HostsListProps) => {
   const openSession = useTermSession((i) => i.push);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
 
-  const hosts = useHosts();
+  const { data, isLoading } = useHosts({ parentId });
 
   const hostsList = useMemo(() => {
-    let items = hosts.data || [];
+    let items = data || [];
 
     if (search) {
       items = items.filter((item: any) => {
@@ -33,7 +43,25 @@ const HostList = ({ allowEdit = true }: HostsListProps) => {
     }
 
     return items.map((i: any) => ({ ...i, key: i.id }));
-  }, [hosts.data, search]);
+  }, [data, search]);
+
+  const groups = useMemo(
+    () => hostsList.filter((i: any) => i.type === "group"),
+    [hostsList]
+  );
+
+  const hosts = useMemo(
+    () => hostsList.filter((i: any) => i.type !== "group"),
+    [hostsList]
+  );
+
+  const onSelect = (host: any) => {
+    if (selected.includes(host.id)) {
+      onSelectedChange?.(selected.filter((i) => i !== host.id));
+    } else {
+      onSelectedChange?.([...selected, host.id]);
+    }
+  };
 
   const onEdit = (host: any) => {
     if (!allowEdit) return;
@@ -68,29 +96,76 @@ const HostList = ({ allowEdit = true }: HostsListProps) => {
         />
       </View>
 
-      {hosts.isLoading ? (
+      {isLoading ? (
         <View alignItems="center" justifyContent="center" flex={1}>
           <Spinner size="large" />
           <Text mt="$4">Loading...</Text>
         </View>
       ) : (
-        <GridView
-          data={hostsList}
-          columns={{ sm: 2, lg: 3, xl: 4 }}
-          contentContainerStyle={{ p: "$2", pt: 0 }}
-          gap="$2.5"
-          renderItem={(host: any) => (
-            <HostItem
-              host={host}
-              onTap={() => {}}
-              onMultiTap={() => onOpenTerminal(host)}
-              onEdit={allowEdit ? () => onEdit(host) : null}
-            />
+        <ScrollView>
+          {groups.length > 0 && (
+            <>
+              <Text mx="$4">Groups</Text>
+              <ItemList
+                data={groups}
+                selected={selected}
+                onTap={onSelectedChange ? onSelect : undefined}
+                onMultiTap={(group) => onParentIdChange?.(group.id)}
+                onEdit={allowEdit ? onEdit : undefined}
+              />
+            </>
           )}
-        />
+
+          <Text mx="$4">Hosts</Text>
+          {!hosts.length && (
+            <Text mx="$4" fontSize="$3" mt="$2">
+              No hosts found
+            </Text>
+          )}
+
+          <ItemList
+            data={hosts}
+            selected={selected}
+            onTap={onSelectedChange ? onSelect : undefined}
+            onMultiTap={onOpenTerminal}
+            onEdit={allowEdit ? onEdit : undefined}
+          />
+        </ScrollView>
       )}
     </>
   );
 };
+
+type ItemListProps = {
+  data?: any[];
+  selected?: string[];
+  onTap?: (host: any) => void;
+  onMultiTap?: (host: any) => void;
+  onEdit?: (host: any) => void;
+};
+
+const ItemList = ({
+  data,
+  selected,
+  onTap,
+  onMultiTap,
+  onEdit,
+}: ItemListProps) => (
+  <GridLayout
+    data={data}
+    columns={{ sm: 2, lg: 3, xl: 4 }}
+    padding="$2"
+    gap="$2.5"
+    renderItem={(host: any) => (
+      <HostItem
+        host={host}
+        selected={selected?.includes(host.id)}
+        onTap={onEdit ? () => onTap?.(host) : undefined}
+        onMultiTap={() => onMultiTap?.(host)}
+        onEdit={onEdit ? () => onEdit?.(host) : undefined}
+      />
+    )}
+  />
+);
 
 export default React.memo(HostList);

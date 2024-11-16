@@ -8,6 +8,10 @@ export const baseFormSchema = z.object({
   parentId: z.string().ulid().nullish(),
 });
 
+const groupSchema = baseFormSchema.merge(
+  z.object({ type: z.literal("group") })
+);
+
 const hostSchema = baseFormSchema.merge(
   z.object({
     host: hostnameShape(),
@@ -52,7 +56,7 @@ const incusSchema = hostSchema.merge(
 
 export const formSchema = z.discriminatedUnion(
   "type",
-  [sshSchema, pveSchema, incusSchema],
+  [groupSchema, sshSchema, pveSchema, incusSchema],
   { errorMap: () => ({ message: "Invalid host type" }) }
 );
 
@@ -67,6 +71,7 @@ export const initialValues: FormSchema = {
 };
 
 export const typeOptions: SelectItem[] = [
+  { label: "Group", value: "group" },
   { label: "SSH", value: "ssh" },
   { label: "Proxmox VE", value: "pve" },
   { label: "Incus", value: "incus" },

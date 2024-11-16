@@ -52,10 +52,9 @@ const InteractiveSession = ({ type, params }: InteractiveSessionProps) => {
       ) : (
         <Terminal url={termUrl} />
       );
-
-    default:
-      throw new Error("Unknown interactive session type");
   }
+
+  return null;
 };
 
 export default InteractiveSession;

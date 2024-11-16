@@ -13,7 +13,7 @@ func HandleStats(c *websocket.Conn) {
 
 	user := utils.GetUserWs(c)
 	hostRepo := hosts.NewRepository(&hosts.Hosts{User: user})
-	data, _ := hostRepo.Get(hostId)
+	data, _ := hostRepo.GetWithKeys(hostId)
 
 	if data == nil || !data.HasAccess(&user.User) {
 		c.WriteMessage(websocket.TextMessage, []byte("Host not found"))

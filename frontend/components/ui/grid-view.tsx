@@ -3,9 +3,32 @@ import { GetProps, ScrollView, View, ViewStyle } from "tamagui";
 
 type GridItem = { key: string };
 
-type GridViewProps<T extends GridItem> = GetProps<typeof ScrollView> & {
+type GridViewProps<T extends GridItem> = GetProps<typeof ScrollView> &
+  GridLayoutProps<T>;
+
+const GridView = <T extends GridItem>({
+  data,
+  renderItem,
+  columns,
+  gap,
+  ...props
+}: GridViewProps<T>) => {
+  return (
+    <ScrollView {...props}>
+      <GridLayout
+        data={data}
+        renderItem={renderItem}
+        gap={gap}
+        columns={columns}
+      />
+    </ScrollView>
+  );
+};
+
+type GridLayoutProps<T extends GridItem> = GetProps<typeof View> & {
   data?: T[] | null;
   renderItem: (item: T, index: number) => React.ReactNode;
+  gap?: string | number;
   columns: {
     xs?: number;
     sm?: number;
@@ -15,10 +38,10 @@ type GridViewProps<T extends GridItem> = GetProps<typeof ScrollView> & {
   };
 };
 
-const GridView = <T extends GridItem>({
+export const GridLayout = <T extends GridItem>({
+  columns,
   data,
   renderItem,
-  columns,
   gap,
   ...props
 }: GridViewProps<T>) => {
@@ -33,20 +56,13 @@ const GridView = <T extends GridItem>({
   }, [columns]);
 
   return (
-    <ScrollView
-      {...props}
-      contentContainerStyle={{
-        flexDirection: "row",
-        flexWrap: "wrap",
-        ...(props.contentContainerStyle as object),
-      }}
-    >
+    <View flexDirection="row" flexWrap="wrap" {...props}>
       {data?.map((item, idx) => (
         <View key={item.key} p={gap} flexShrink={0} {...basisProps}>
           {renderItem(item, idx)}
         </View>
       ))}
-    </ScrollView>
+    </View>
   );
 };
 

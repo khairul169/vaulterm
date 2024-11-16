@@ -63,6 +63,7 @@ export const MultiTapPressable = ({
         }}
         numberOfTaps={numberOfTaps}
         ref={tapRef}
+        maxDelayMs={120}
       >
         <View pressStyle={{ opacity: 0.5 }} {...props} />
       </TapGestureHandler>

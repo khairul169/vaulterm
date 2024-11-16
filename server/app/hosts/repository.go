@@ -23,10 +23,22 @@ func NewRepository(r *Hosts) *Hosts {
 func (r *Hosts) GetAll(opt GetAllOpt) ([]*models.Host, error) {
 	query := r.db.Order("id DESC")
 
+	if len(opt.ID) > 0 {
+		query = query.Where("hosts.id IN (?)", opt.ID)
+	}
+
 	if opt.TeamID != "" {
 		query = query.Where("hosts.team_id = ?", opt.TeamID)
 	} else {
 		query = query.Where("hosts.owner_id = ? AND hosts.team_id IS NULL", r.User.ID)
+	}
+
+	if opt.ParentID != nil {
+		if *opt.ParentID != "" {
+			query = query.Where("hosts.parent_id = ?", *opt.ParentID)
+		} else {
+			query = query.Where("hosts.parent_id IS NULL")
+		}
 	}
 
 	var rows []*models.Host
@@ -35,7 +47,13 @@ func (r *Hosts) GetAll(opt GetAllOpt) ([]*models.Host, error) {
 	return rows, ret.Error
 }
 
-func (r *Hosts) Get(id string) (*models.HostDecrypted, error) {
+func (r *Hosts) Get(id string) (*models.Host, error) {
+	var host models.Host
+	ret := r.db.Where("hosts.id = ?", id).First(&host)
+	return &host, ret.Error
+}
+
+func (r *Hosts) GetWithKeys(id string) (*models.HostDecrypted, error) {
 	var host models.Host
 	ret := r.db.Joins("Key").Joins("AltKey").Where("hosts.id = ?", id).First(&host)
 	if ret.Error != nil {
@@ -66,4 +84,8 @@ func (r *Hosts) Update(id string, item *models.Host) error {
 
 func (r *Hosts) Delete(id string) error {
 	return r.db.Delete(&models.Host{Model: models.Model{ID: id}}).Error
+}
+
+func (r *Hosts) SetParentId(id *string, hostIds []string) error {
+	return r.db.Model(&models.Host{}).Where("id IN (?)", hostIds).Update("parent_id", id).Error
 }

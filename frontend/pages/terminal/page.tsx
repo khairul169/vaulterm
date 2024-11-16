@@ -4,11 +4,11 @@ import PagerView, { PagerViewRef } from "@/components/ui/pager-view";
 import { useTermSession } from "@/stores/terminal-sessions";
 import { Button, useMedia } from "tamagui";
 import SessionTabs from "./components/session-tabs";
-import HostList from "../hosts/components/host-list";
 import Drawer from "expo-router/drawer";
 import { router } from "expo-router";
 import Icons from "@/components/ui/icons";
 import { useDebounceCallback } from "@/hooks/useDebounce";
+import NewSessionPage from "./new-session-page";
 
 const TerminalPage = () => {
   const pagerViewRef = useRef<PagerViewRef>(null!);
@@ -58,7 +58,7 @@ const TerminalPage = () => {
       />
 
       {sessions.length > 0 && media.gtSm ? <SessionTabs /> : null}
-      {!sessions.length ? <HostList allowEdit={false} /> : pagerView}
+      {!sessions.length ? <NewSessionPage /> : pagerView}
     </>
   );
 };

@@ -6,12 +6,19 @@ import OSIcons from "@/components/ui/os-icons";
 
 type HostItemProps = {
   host: any;
+  selected?: boolean;
   onMultiTap: () => void;
-  onTap: () => void;
+  onTap?: () => void;
   onEdit?: (() => void) | null;
 };
 
-const HostItem = ({ host, onMultiTap, onTap, onEdit }: HostItemProps) => {
+const HostItem = ({
+  host,
+  selected,
+  onMultiTap,
+  onTap,
+  onEdit,
+}: HostItemProps) => {
   return (
     <MultiTapPressable
       cursor="pointer"
@@ -20,15 +27,24 @@ const HostItem = ({ host, onMultiTap, onTap, onEdit }: HostItemProps) => {
       onMultiTap={onMultiTap}
       onTap={onTap}
     >
-      <Card bordered p="$4">
+      <Card
+        bordered
+        p="$4"
+        borderColor={selected ? "$blue8" : "$borderColor"}
+        bg={selected ? "$blue3" : undefined}
+      >
         <XStack>
-          <OSIcons
-            name={host.os}
-            size={18}
-            mr="$2"
-            mt="$1"
-            fallback="desktop-classic"
-          />
+          {host.type === "group" ? (
+            <Icons name="package-variant-closed" size={18} mr="$2" mt="$1" />
+          ) : (
+            <OSIcons
+              name={host.os}
+              size={18}
+              mr="$2"
+              mt="$1"
+              fallback="desktop-classic"
+            />
+          )}
 
           <View flex={1}>
             <Text>{host.label}</Text>

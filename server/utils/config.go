@@ -9,16 +9,18 @@ import (
 )
 
 func GetDataPath(resolveFile string) string {
+	dataDir := os.Getenv("DATA_DIR")
+	if dataDir != "" {
+		return filepath.Join(dataDir, resolveFile)
+	}
+
 	// Resolve the app directory
-	execPath, err := os.Executable()
+	cwd, err := os.Getwd()
 	if err != nil {
 		return ""
 	}
-	appDir := filepath.Dir(execPath)
-	if resolveFile == "" {
-		return appDir
-	}
-	return filepath.Join(appDir, resolveFile)
+
+	return filepath.Join(cwd, resolveFile)
 }
 
 func CheckAndCreateEnvFile() error {

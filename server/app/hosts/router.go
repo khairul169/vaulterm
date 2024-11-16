@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/server/models"
@@ -17,10 +18,13 @@ func Router(app fiber.Router) {
 	router.Post("/", create)
 	router.Put("/:id", update)
 	router.Delete("/:id", delete)
+	router.Post("/move", move)
 }
 
 func getAll(c *fiber.Ctx) error {
 	teamId := c.Query("teamId")
+	parentId := c.Query("parentId")
+
 	user := utils.GetUser(c)
 	repo := NewRepository(&Hosts{User: user})
 
@@ -28,7 +32,7 @@ func getAll(c *fiber.Ctx) error {
 		return utils.ResponseError(c, errors.New("no access"), 403)
 	}
 
-	rows, err := repo.GetAll(GetAllOpt{TeamID: teamId})
+	rows, err := repo.GetAll(GetAllOpt{TeamID: teamId, ParentID: &parentId})
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
@@ -142,4 +146,56 @@ func delete(c *fiber.Ctx) error {
 		"status":  "ok",
 		"message": "Successfully deleted",
 	})
+}
+
+func move(c *fiber.Ctx) error {
+	user := utils.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
+
+	// validate request
+	var body MoveHostSchema
+	if err := c.BodyParser(&body); err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+	if body.HostID == "" {
+		return utils.ResponseError(c, errors.New("invalid request"), 400)
+	}
+
+	// get parent
+	var parentId *string
+
+	if body.ParentID != "" {
+		parent, err := repo.Get(body.ParentID)
+		if err != nil {
+			return utils.ResponseError(c, err, 500)
+		}
+		if !parent.CanWrite(&user.User) {
+			return utils.ResponseError(c, errors.New("no access"), 403)
+		}
+		parentId = &body.ParentID
+	}
+
+	// get hosts
+	hostIds := strings.Split(body.HostID, ",")
+	hosts, err := repo.GetAll(GetAllOpt{TeamID: body.TeamID, ID: hostIds})
+	if err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	if len(hosts) != len(hostIds) {
+		return utils.ResponseError(c, errors.New("one or more hosts not found"), 400)
+	}
+
+	for _, host := range hosts {
+		if !host.CanWrite(&user.User) {
+			return utils.ResponseError(c, errors.New("no access"), 403)
+		}
+	}
+
+	// move the hosts to new parent
+	if err := repo.SetParentId(parentId, hostIds); err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	return c.JSON(true)
 }

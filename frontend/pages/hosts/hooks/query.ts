@@ -5,12 +5,13 @@ import { useMemo } from "react";
 import { useKeychains } from "@/pages/keychains/hooks/query";
 import queryClient from "@/lib/queryClient";
 import { useTeamId } from "@/stores/auth";
+import { MoveHostPayload } from "../schema/query";
 
-export const useHosts = () => {
+export const useHosts = (params: any = {}) => {
   const teamId = useTeamId();
   return useQuery({
-    queryKey: ["hosts", teamId],
-    queryFn: () => api("/hosts", { params: { teamId } }),
+    queryKey: ["hosts", teamId, params],
+    queryFn: () => api("/hosts", { params: { teamId, ...params } }),
     select: (i) => i.rows,
   });
 };
@@ -40,7 +41,26 @@ export const useSaveHost = () => {
         ? api(`/hosts/${body.id}`, { method: "PUT", body })
         : api(`/hosts`, { method: "POST", body });
     },
-    onError: (e) => console.error(e),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["hosts"] });
+    },
+  });
+};
+
+export const useMoveHost = () => {
+  const teamId = useTeamId();
+
+  return useMutation({
+    mutationFn: (data: MoveHostPayload) => {
+      const hostId = Array.isArray(data.hostId)
+        ? data.hostId.join(",")
+        : data.hostId;
+
+      return api("/hosts/move", {
+        method: "POST",
+        body: { teamId, parentId: data.parentId, hostId },
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hosts"] });
     },

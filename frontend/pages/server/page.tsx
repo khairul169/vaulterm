@@ -80,6 +80,7 @@ export default function ServerPage() {
               autoCapitalize="none"
               keyboardType="url"
               placeholder="https://"
+              onSubmitEditing={onSubmit}
             />
           </FormField>
 

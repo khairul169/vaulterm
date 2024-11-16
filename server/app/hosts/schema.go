@@ -16,5 +16,13 @@ type CreateHostSchema struct {
 }
 
 type GetAllOpt struct {
-	TeamID string
+	TeamID   string
+	ParentID *string
+	ID       []string
+}
+
+type MoveHostSchema struct {
+	TeamID   string `json:"teamId"`
+	ParentID string `json:"parentId"`
+	HostID   string `json:"hostId"`
 }

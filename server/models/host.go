@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	HostTypeGroup     = "group"
 	HostTypeSSH       = "ssh"
 	HostTypePVE       = "pve"
 	HostTypePVENode   = "pve_node"
