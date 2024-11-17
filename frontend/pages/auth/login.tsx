@@ -14,6 +14,7 @@ import tamaguiConfig from "@/tamagui.config";
 import { useLoginMutation } from "./hooks";
 import LoginGithubButton from "./components/login-github";
 import { useServerConfig } from "@/hooks/useServerConfig";
+import LoginGitlabButton from "./components/login-gitlab";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -109,6 +110,7 @@ export default function LoginPage() {
               </Text>
 
               {oauthList.includes("github") && <LoginGithubButton />}
+              {oauthList.includes("gitlab") && <LoginGitlabButton />}
             </>
           )}
 

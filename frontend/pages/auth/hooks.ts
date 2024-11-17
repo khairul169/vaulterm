@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   loginResultSchema,
   LoginSchema,
@@ -45,8 +45,8 @@ export const useRegisterMutation = () => {
 
 export const useOAuthCallback = (type: string) => {
   return useMutation({
-    mutationFn: async (code: string) => {
-      const res = await api(`/auth/oauth/${type}/callback?code=${code}`);
+    mutationFn: async (params: { code: string; verifier?: string }) => {
+      const res = await api(`/auth/oauth/${type}/callback`, { params });
       const { data } = loginResultSchema.safeParse(res);
       if (!data) {
         throw new Error("Invalid response!");

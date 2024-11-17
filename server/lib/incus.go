@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"rul.sh/vaulterm/server/utils"
 )
 
 type IncusServer struct {
@@ -22,7 +24,7 @@ type IncusFetchConfig struct {
 }
 
 func (i *IncusServer) GetCertificate() (*tls.Certificate, error) {
-	return LoadClientCertificate(i.ClientCert, i.ClientKey)
+	return utils.LoadClientCertificate(i.ClientCert, i.ClientKey)
 }
 
 func (i *IncusServer) Fetch(method string, url string, cfg *IncusFetchConfig) ([]byte, error) {

@@ -19,6 +19,8 @@ func Router(app *fiber.App) {
 	oauth := router.Group("/oauth")
 	oauth.Get("/github", githubRedir)
 	oauth.Get("/github/callback", githubCallback)
+	oauth.Get("/gitlab", gitlabRedir)
+	oauth.Get("/gitlab/callback", gitlabCallback)
 }
 
 func login(c *fiber.Ctx) error {
@@ -40,7 +42,7 @@ func login(c *fiber.Ctx) error {
 		}
 	}
 
-	if valid := lib.VerifyPassword(body.Password, user.Password); !valid {
+	if valid := utils.VerifyPassword(body.Password, user.Password); !valid {
 		return &fiber.Error{
 			Code:    fiber.StatusUnauthorized,
 			Message: "Username or password is invalid",
@@ -59,7 +61,7 @@ func login(c *fiber.Ctx) error {
 }
 
 func getUser(c *fiber.Ctx) error {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	teams := []TeamWithRole{}
 
 	for _, item := range user.Teams {
@@ -96,15 +98,15 @@ func register(c *fiber.Ctx) error {
 		}
 	}
 
-	password, err := lib.HashPassword(body.Password)
+	password, err := utils.HashPassword(body.Password)
 	if err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
 
 	user := &models.User{
 		Name:     body.Name,
-		Username: body.Username,
-		Email:    body.Email,
+		Username: &body.Username,
+		Email:    &body.Email,
 		Password: password,
 		Role:     models.UserRoleUser,
 	}

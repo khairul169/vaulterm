@@ -15,7 +15,7 @@ import (
 func HandleTerm(c *websocket.Conn) {
 	hostId := c.Query("hostId")
 
-	user := utils.GetUserWs(c)
+	user := lib.GetUserWs(c)
 	hostRepo := hosts.NewRepository(&hosts.Hosts{User: user})
 	data, err := hostRepo.GetWithKeys(hostId)
 

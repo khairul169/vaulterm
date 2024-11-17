@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"rul.sh/vaulterm/server/lib"
+	"rul.sh/vaulterm/server/utils"
 )
 
 const (
@@ -36,7 +36,7 @@ func (k *Keychain) EncryptData(data interface{}) error {
 		return err
 	}
 
-	enc, err := lib.Encrypt(string(jsonData))
+	enc, err := utils.Encrypt(string(jsonData))
 	if err == nil {
 		k.Data = enc
 	}
@@ -45,7 +45,7 @@ func (k *Keychain) EncryptData(data interface{}) error {
 
 func (k *Keychain) DecryptData(data interface{}) error {
 	// Decrypt stored data
-	dec, err := lib.Decrypt(k.Data)
+	dec, err := utils.Decrypt(k.Data)
 	if err != nil {
 		return err
 	}

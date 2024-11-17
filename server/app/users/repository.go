@@ -3,13 +3,13 @@ package users
 import (
 	"gorm.io/gorm"
 	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
-	"rul.sh/vaulterm/server/utils"
 )
 
 type Users struct {
 	db   *gorm.DB
-	User *utils.UserContext
+	User *lib.UserContext
 }
 
 func NewRepository(r *Users) *Users {

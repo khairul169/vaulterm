@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"rul.sh/vaulterm/server/lib"
 )
 
 func GetDataPath(resolveFile string) string {
@@ -35,7 +33,7 @@ func CheckAndCreateEnvFile() error {
 	}
 
 	// File doesn't exist, so create it
-	randomKey, err := lib.GenerateRandomKey()
+	randomKey, err := GenerateRandomKey()
 	if err != nil {
 		return err
 	}

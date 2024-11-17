@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"rul.sh/vaulterm/server/app/teams"
 	"rul.sh/vaulterm/server/app/users"
+	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
 	"rul.sh/vaulterm/server/utils"
 )
@@ -20,7 +21,7 @@ func Router(app fiber.Router) {
 }
 
 // func getAll(c *fiber.Ctx) error {
-// 	user := utils.GetUser(c)
+// 	user := lib.GetUser(c)
 // 	repo := NewRepository(&TeamMembers{User: user})
 
 // 	rows, err := repo.GetAll()
@@ -37,7 +38,7 @@ func invite(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	teamRepo := teams.NewRepository(&teams.Teams{User: user})
 	repo := NewRepository(&TeamMembers{User: user})
 
@@ -70,7 +71,7 @@ func setRole(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	teamRepo := teams.NewRepository(&teams.Teams{User: user})
 	repo := NewRepository(&TeamMembers{User: user})
 
@@ -103,7 +104,7 @@ func setRole(c *fiber.Ctx) error {
 }
 
 func remove(c *fiber.Ctx) error {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	teamRepo := teams.NewRepository(&teams.Teams{User: user})
 	repo := NewRepository(&TeamMembers{User: user})
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
 	"rul.sh/vaulterm/server/utils"
 )
@@ -26,7 +27,7 @@ func getAll(c *fiber.Ctx) error {
 	teamId := c.Query("teamId")
 	withData := c.Query("withData")
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Keychains{User: user})
 
 	if teamId != "" && !user.IsInTeam(&teamId) {
@@ -69,7 +70,7 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Keychains{User: user})
 
 	if body.TeamID != nil && !user.TeamCanWrite(body.TeamID) {
@@ -100,7 +101,7 @@ func update(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Keychains{User: user})
 
 	id := c.Params("id")

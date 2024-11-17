@@ -12,12 +12,12 @@ const (
 type User struct {
 	Model
 
-	Name     string `json:"name"`
-	Username string `json:"username" gorm:"unique"`
-	Password string `json:"-"`
-	Email    string `json:"email" gorm:"unique"`
-	Role     string `json:"role" gorm:"default:user;not null;index:users_role_idx;type:varchar(8)"`
-	Image    string `json:"image" gorm:"type:varchar(255)"`
+	Name     string  `json:"name"`
+	Username *string `json:"username" gorm:"unique"`
+	Password string  `json:"-"`
+	Email    *string `json:"email" gorm:"unique"`
+	Role     string  `json:"role" gorm:"default:user;not null;index:users_role_idx;type:varchar(8)"`
+	Image    string  `json:"image" gorm:"type:varchar(255)"`
 
 	Teams    []*TeamMembers `json:"teams" gorm:"foreignKey:UserID"`
 	Accounts []*UserAccount `json:"accounts" gorm:"foreignKey:UserID"`

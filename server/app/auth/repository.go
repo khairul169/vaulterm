@@ -3,8 +3,8 @@ package auth
 import (
 	"gorm.io/gorm"
 	"rul.sh/vaulterm/server/db"
-	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
+	"rul.sh/vaulterm/server/utils"
 )
 
 type Auth struct{ db *gorm.DB }
@@ -30,7 +30,7 @@ func (r *Auth) FindUserAccount(accountType string, accountId string) (*models.Us
 }
 
 func (r *Auth) CreateUserSession(user *models.User) (string, error) {
-	sessionId, err := lib.GenerateSessionID(20)
+	sessionId, err := utils.GenerateSessionID(20)
 	if err != nil {
 		return "", err
 	}

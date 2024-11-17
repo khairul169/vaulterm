@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
 	"rul.sh/vaulterm/server/utils"
 )
@@ -22,7 +23,7 @@ func Router(app fiber.Router) fiber.Router {
 }
 
 func getAll(c *fiber.Ctx) error {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Teams{User: user})
 
 	rows, err := repo.GetAll()
@@ -34,7 +35,7 @@ func getAll(c *fiber.Ctx) error {
 }
 
 func getById(c *fiber.Ctx) error {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Teams{User: user})
 
 	id := c.Params("id")
@@ -52,7 +53,7 @@ func create(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Teams{User: user})
 
 	item := &models.Team{
@@ -73,7 +74,7 @@ func update(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err, 500)
 	}
 
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Teams{User: user})
 
 	id := c.Params("id")
@@ -98,7 +99,7 @@ func update(c *fiber.Ctx) error {
 }
 
 func delete(c *fiber.Ctx) error {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	repo := NewRepository(&Teams{User: user})
 
 	id := c.Params("id")

@@ -3,13 +3,13 @@ package teams
 import (
 	"gorm.io/gorm"
 	"rul.sh/vaulterm/server/db"
+	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
-	"rul.sh/vaulterm/server/utils"
 )
 
 type Teams struct {
 	db   *gorm.DB
-	User *utils.UserContext
+	User *lib.UserContext
 }
 
 func NewRepository(r *Teams) *Teams {

@@ -7,11 +7,10 @@ import (
 	"rul.sh/vaulterm/server/app/keychains"
 	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
-	"rul.sh/vaulterm/server/utils"
 )
 
 func tryConnect(c *fiber.Ctx, host *models.Host) (string, error) {
-	user := utils.GetUser(c)
+	user := lib.GetUser(c)
 	keyRepo := keychains.NewRepository(&keychains.Keychains{User: user})
 
 	var key map[string]interface{}

@@ -5,13 +5,12 @@ import (
 	"rul.sh/vaulterm/server/app/hosts"
 	"rul.sh/vaulterm/server/lib"
 	"rul.sh/vaulterm/server/models"
-	"rul.sh/vaulterm/server/utils"
 )
 
 func HandleStats(c *websocket.Conn) {
 	hostId := c.Query("hostId")
 
-	user := utils.GetUserWs(c)
+	user := lib.GetUserWs(c)
 	hostRepo := hosts.NewRepository(&hosts.Hosts{User: user})
 	data, _ := hostRepo.GetWithKeys(hostId)
 

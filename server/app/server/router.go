@@ -22,8 +22,9 @@ func getServerInfo(c *fiber.Ctx) error {
 
 func getConfig(c *fiber.Ctx) error {
 	config := fiber.Map{
-		"oauth":            "github",
+		"oauth":            os.Getenv("OAUTH_ENABLED"),
 		"github_client_id": os.Getenv("GITHUB_CLIENT_ID"),
+		"gitlab_client_id": os.Getenv("GITLAB_CLIENT_ID"),
 	}
 	return c.JSON(config)
 }
