@@ -24,7 +24,7 @@ const Drawer = (props: DrawerContentComponentProps) => {
 
   return (
     <View pt={insets.top} flex={1}>
-      <View py="$4" px="$2">
+      <View py="$4" px="$3">
         <UserMenuButton />
       </View>
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"rul.sh/vaulterm/server/app/auth"
+	"rul.sh/vaulterm/server/app/server"
 	"rul.sh/vaulterm/server/db"
 	"rul.sh/vaulterm/server/middleware"
 	"rul.sh/vaulterm/server/utils"
@@ -31,12 +32,7 @@ func NewApp() *fiber.App {
 	app.Use(cors.New())
 
 	// Server info
-	app.Get("/server", func(c *fiber.Ctx) error {
-		return c.JSON(&fiber.Map{
-			"name":    "Vaulterm",
-			"version": "0.0.1",
-		})
-	})
+	server.Router(app)
 
 	// Health check
 	app.Get("/health-check", func(c *fiber.Ctx) error {

@@ -6,17 +6,21 @@ import { useZForm } from "@/hooks/useZForm";
 import { Link, router, Stack } from "expo-router";
 import Button from "@/components/ui/button";
 import ThemeSwitcher from "@/components/containers/theme-switcher";
-import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
+import * as WebBrowser from "expo-web-browser";
 import { ErrorAlert } from "@/components/ui/alert";
 import { loginSchema } from "./schema";
 import Icons from "@/components/ui/icons";
 import tamaguiConfig from "@/tamagui.config";
 import { useLoginMutation } from "./hooks";
+import LoginGithubButton from "./components/login-github";
+import { useServerConfig } from "@/hooks/useServerConfig";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginPage() {
   const form = useZForm(loginSchema);
   const login = useLoginMutation();
+  const { data: oauthList } = useServerConfig("oauth");
 
   const onSubmit = form.handleSubmit((values) => {
     login.mutate(values);
@@ -97,6 +101,16 @@ export default function LoginPage() {
               </Text>
             </Link>
           </XStack>
+
+          {oauthList?.length > 0 && (
+            <>
+              <Text textAlign="center" fontSize="$3">
+                or
+              </Text>
+
+              {oauthList.includes("github") && <LoginGithubButton />}
+            </>
+          )}
 
           <Separator w="100%" />
 

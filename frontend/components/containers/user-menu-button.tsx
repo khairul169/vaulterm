@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  Avatar,
-  Button,
-  ListItem,
-  Separator,
-  Text,
-  useMedia,
-  View,
-} from "tamagui";
+import { Button, ListItem, Separator, Text, useMedia, View } from "tamagui";
 import MenuButton from "../ui/menu-button";
 import Icons from "../ui/icons";
 import { logout, setTeam, useTeamId } from "@/stores/auth";
 import { useUser } from "@/hooks/useUser";
 import TeamForm, { teamFormModal } from "@/pages/team/components/team-form";
+import Avatar from "../ui/avatar";
 
 const UserMenuButton = () => {
   const user = useUser();
@@ -31,16 +24,21 @@ const UserMenuButton = () => {
             borderWidth={0}
             justifyContent="flex-start"
             borderRadius="$10"
-            py={0}
-            px="$2"
+            p={0}
             gap="$1"
           >
-            <Avatar circular size="$3">
-              <Avatar.Fallback bg="$blue4" />
-            </Avatar>
+            <Avatar size="$4" src={user?.image} />
+
             <View flex={1}>
-              <Text textAlign='left' numberOfLines={1}>{user?.name}</Text>
-              <Text textAlign='left' numberOfLines={1} fontWeight="600" mt="$1.5">
+              <Text textAlign="left" numberOfLines={1}>
+                {user?.name}
+              </Text>
+              <Text
+                textAlign="left"
+                numberOfLines={1}
+                fontWeight="600"
+                mt="$1.5"
+              >
                 {team ? `${team.icon} ${team.name}` : "Personal"}
               </Text>
             </View>

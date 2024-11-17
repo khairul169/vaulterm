@@ -42,3 +42,20 @@ export const useRegisterMutation = () => {
     },
   });
 };
+
+export const useOAuthCallback = (type: string) => {
+  return useMutation({
+    mutationFn: async (code: string) => {
+      const res = await api(`/auth/oauth/${type}/callback?code=${code}`);
+      const { data } = loginResultSchema.safeParse(res);
+      if (!data) {
+        throw new Error("Invalid response!");
+      }
+      return data;
+    },
+    onSuccess(data) {
+      authStore.setState({ token: data.sessionId });
+      router.replace("/");
+    },
+  });
+};

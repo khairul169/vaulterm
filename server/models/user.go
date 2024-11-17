@@ -5,6 +5,8 @@ import "slices"
 const (
 	UserRoleUser  = "user"
 	UserRoleAdmin = "admin"
+
+	UserAccountTypeGithub = "github"
 )
 
 type User struct {
@@ -15,8 +17,10 @@ type User struct {
 	Password string `json:"-"`
 	Email    string `json:"email" gorm:"unique"`
 	Role     string `json:"role" gorm:"default:user;not null;index:users_role_idx;type:varchar(8)"`
+	Image    string `json:"image" gorm:"type:varchar(255)"`
 
-	Teams []*TeamMembers `json:"teams" gorm:"foreignKey:UserID"`
+	Teams    []*TeamMembers `json:"teams" gorm:"foreignKey:UserID"`
+	Accounts []*UserAccount `json:"accounts" gorm:"foreignKey:UserID"`
 
 	Timestamps
 	SoftDeletes
@@ -29,6 +33,20 @@ type UserSession struct {
 
 	Timestamps
 	SoftDeletes
+}
+
+type UserAccount struct {
+	Model
+
+	UserID string `json:"userId" gorm:"type:varchar(26)"`
+	User   User   `json:"user" gorm:"foreignKey:UserID"`
+
+	Type      string `json:"type" gorm:"type:varchar(16);index:user_accounts_type_idx"`
+	AccountID string `json:"accountId" gorm:"type:varchar(64);index:user_accounts_accountid_idx"`
+	Username  string `json:"username" gorm:"type:varchar(64);index:user_accounts_username_idx"`
+	Email     string `json:"email" gorm:"type:varchar(64);index:user_accounts_email_idx"`
+
+	Timestamps
 }
 
 func (u *User) IsAdmin() bool {

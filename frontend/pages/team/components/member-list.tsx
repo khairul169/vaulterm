@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Avatar, Button, ListItem, View, YGroup } from "tamagui";
+import { Button, ListItem, View, YGroup } from "tamagui";
 import MenuButton from "@/components/ui/menu-button";
 import Icons from "@/components/ui/icons";
 import SearchInput from "@/components/ui/search-input";
@@ -7,6 +7,7 @@ import { useTeamId } from "@/stores/auth";
 import { changeRoleModal } from "./change-role-form";
 import { useRemoveMemberMutation } from "../hooks/query";
 import { showDialog } from "@/hooks/useDialog";
+import Avatar from "@/components/ui/avatar";
 
 type Props = {
   members?: any[];
@@ -59,11 +60,7 @@ const MemberList = ({ members, allowWrite }: Props) => {
               title={member.user?.name}
               subTitle={member.role}
               pr="$2"
-              icon={
-                <Avatar size="$3" circular>
-                  <Avatar.Fallback bg="$blue5" />
-                </Avatar>
-              }
+              icon={<Avatar src={member.user?.image} size="$4" />}
               iconAfter={
                 allowWrite ? (
                   <MemberActionButton

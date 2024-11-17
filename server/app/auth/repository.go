@@ -23,6 +23,12 @@ func (r *Auth) FindUser(username string, email string) (*models.User, error) {
 	return &user, ret.Error
 }
 
+func (r *Auth) FindUserAccount(accountType string, accountId string) (*models.UserAccount, error) {
+	var user models.UserAccount
+	ret := r.db.Where("type = ? AND account_id = ?", accountType, accountId).Joins("User").First(&user)
+	return &user, ret.Error
+}
+
 func (r *Auth) CreateUserSession(user *models.User) (string, error) {
 	sessionId, err := lib.GenerateSessionID(20)
 	if err != nil {

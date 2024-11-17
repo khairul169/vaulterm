@@ -12,6 +12,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/wailsapp/wails/v2 v2.9.2
 	golang.org/x/crypto v0.28.0
+	golang.org/x/oauth2 v0.24.0
 	gorm.io/datatypes v1.2.4
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/driver/sqlite v1.5.6

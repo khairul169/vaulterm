@@ -7,6 +7,7 @@ import (
 var Models = []interface{}{
 	&models.User{},
 	&models.UserSession{},
+	&models.UserAccount{},
 	&models.Keychain{},
 	&models.Host{},
 	&models.Team{},
