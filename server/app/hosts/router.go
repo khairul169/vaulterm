@@ -20,6 +20,7 @@ func Router(app fiber.Router) {
 	router.Put("/:id", update)
 	router.Delete("/:id", delete)
 	router.Post("/move", move)
+	router.Get("/tags", getTags)
 }
 
 func getAll(c *fiber.Ctx) error {
@@ -69,6 +70,11 @@ func create(c *fiber.Ctx) error {
 		AltKeyID: body.AltKeyID,
 	}
 
+	item.Tags = []*models.HostTag{}
+	for _, tag := range body.Tags {
+		item.Tags = append(item.Tags, &models.HostTag{Name: tag})
+	}
+
 	osName, err := tryConnect(c, item)
 	if err != nil {
 		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
@@ -113,13 +119,25 @@ func update(c *fiber.Ctx) error {
 		AltKeyID: body.AltKeyID,
 	}
 
-	osName, err := tryConnect(c, item)
-	if err != nil {
-		return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
-	}
-	item.OS = osName
+	// osName, err := tryConnect(c, item)
+	// if err != nil {
+	// 	return utils.ResponseError(c, fmt.Errorf("cannot connect to the host: %s", err), 500)
+	// }
+	// item.OS = osName
 
 	if err := repo.Update(id, item); err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	tags := []models.HostTag{}
+	for _, tag := range body.Tags {
+		tags = append(tags, models.HostTag{
+			Name: tag,
+		})
+	}
+
+	if err := repo.db.Unscoped().Model(&item).
+		Association("Tags").Unscoped().Replace(&tags); err != nil {
 		return utils.ResponseError(c, err, 500)
 	}
 
@@ -199,4 +217,19 @@ func move(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(true)
+}
+
+func getTags(c *fiber.Ctx) error {
+	teamId := c.Query("teamId")
+	user := lib.GetUser(c)
+	repo := NewRepository(&Hosts{User: user})
+
+	rows, err := repo.GetAvailableTags(teamId)
+	if err != nil {
+		return utils.ResponseError(c, err, 500)
+	}
+
+	return c.JSON(fiber.Map{
+		"rows": rows,
+	})
 }

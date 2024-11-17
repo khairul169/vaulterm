@@ -27,17 +27,10 @@ const Modal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
       <Adapt when="sm" platform="touch">
-        <Sheet
-          animation="quick"
-          zIndex={999}
-          modal
-          dismissOnSnapToBottom
-          snapPoints={[40, 60, 0]}
-          // disableDrag
-        >
+        <Sheet animation="quick" zIndex={999} modal dismissOnSnapToBottom>
           <Sheet.Overlay
             opacity={0.1}
-            animation="quick"
+            animation="quickest"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
             zIndex={0}
@@ -52,7 +45,7 @@ const Modal = ({
         <Dialog.Overlay
           key="overlay"
           animation="quickest"
-          opacity={0.5}
+          opacity={0.2}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
         />

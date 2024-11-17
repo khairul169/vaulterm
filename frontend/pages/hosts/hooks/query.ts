@@ -66,3 +66,17 @@ export const useMoveHost = () => {
     },
   });
 };
+
+export const useTags = () => {
+  const teamId = useTeamId();
+  return useQuery({
+    queryKey: ["hosts/tags", teamId],
+    queryFn: () => api("/hosts/tags", { params: { teamId } }),
+    select: (data) => {
+      return data?.rows?.map((row: any) => ({
+        label: row.name,
+        value: row.name,
+      }));
+    },
+  });
+};

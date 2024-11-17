@@ -8,12 +8,16 @@ import { ScrollView, XStack } from "tamagui";
 import { FormSchema, formSchema, typeOptions } from "../schema/form";
 import { InputField } from "@/components/ui/input";
 import FormField from "@/components/ui/form";
-import { useSaveHost } from "../hooks/query";
+import { useSaveHost, useTags } from "../hooks/query";
 import { ErrorAlert } from "@/components/ui/alert";
 import Button from "@/components/ui/button";
 import { PVEFormFields } from "./pve";
 import { IncusFormFields } from "./incus";
 import { SSHFormFields } from "./ssh";
+import {
+  SelectMultipleField,
+  useSelectCreatableItems,
+} from "@/components/ui/select-multiple";
 
 export const hostFormModal = createDisclosure<FormSchema>();
 
@@ -22,6 +26,8 @@ const HostForm = () => {
   const form = useZForm(formSchema, data);
   const isEditing = data?.id != null;
   const type = form.watch("type");
+  const hostTags = useTags();
+  const [tags, addTag] = useSelectCreatableItems(hostTags.data);
 
   const saveMutation = useSaveHost();
 
@@ -53,6 +59,17 @@ const HostForm = () => {
 
         {type !== "group" && (
           <>
+            <FormField label="Tags">
+              <SelectMultipleField
+                form={form}
+                name="tags"
+                placeholder="Select Tags"
+                items={tags}
+                isCreatable
+                onCreate={addTag}
+              />
+            </FormField>
+
             <FormField label="Hostname">
               <InputField
                 form={form}
@@ -98,4 +115,4 @@ const HostForm = () => {
   );
 };
 
-export default HostForm;
+export default React.memo(HostForm);

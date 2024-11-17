@@ -8,6 +8,7 @@ type CreateHostSchema struct {
 	Host     string            `json:"host"`
 	Port     int               `json:"port"`
 	Metadata datatypes.JSONMap `json:"metadata"`
+	Tags     []string          `json:"tags"`
 
 	TeamID   *string `json:"teamId"`
 	ParentID *string `json:"parentId"`

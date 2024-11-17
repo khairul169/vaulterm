@@ -56,7 +56,7 @@ export const GridLayout = <T extends GridItem>({
   }, [columns]);
 
   return (
-    <View flexDirection="row" flexWrap="wrap" {...props}>
+    <View flexDirection="row" flexWrap="wrap" alignItems="stretch" {...props}>
       {data?.map((item, idx) => (
         <View key={item.key} p={gap} flexShrink={0} {...basisProps}>
           {renderItem(item, idx)}

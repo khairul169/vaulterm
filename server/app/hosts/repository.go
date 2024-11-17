@@ -21,7 +21,9 @@ func NewRepository(r *Hosts) *Hosts {
 }
 
 func (r *Hosts) GetAll(opt GetAllOpt) ([]*models.Host, error) {
-	query := r.db.Order("id DESC")
+	query := r.db.
+		Preload("Tags").
+		Order("id DESC")
 
 	if len(opt.ID) > 0 {
 		query = query.Where("hosts.id IN (?)", opt.ID)
@@ -33,7 +35,7 @@ func (r *Hosts) GetAll(opt GetAllOpt) ([]*models.Host, error) {
 		query = query.Where("hosts.owner_id = ? AND hosts.team_id IS NULL", r.User.ID)
 	}
 
-	if opt.ParentID != nil {
+	if opt.ParentID != nil && *opt.ParentID != "none" {
 		if *opt.ParentID != "" {
 			query = query.Where("hosts.parent_id = ?", *opt.ParentID)
 		} else {
@@ -88,4 +90,19 @@ func (r *Hosts) Delete(id string) error {
 
 func (r *Hosts) SetParentId(id *string, hostIds []string) error {
 	return r.db.Model(&models.Host{}).Where("id IN (?)", hostIds).Update("parent_id", id).Error
+}
+
+func (r *Hosts) GetAvailableTags(teamId string) (*[]models.HostTag, error) {
+	query := r.db.Model(&models.HostTag{}).
+		Joins("JOIN hosts ON hosts.id = host_tags.host_id").
+		Distinct("host_tags.name")
+
+	if teamId != "" {
+		query = query.Where("hosts.team_id = ?", teamId)
+	} else {
+		query = query.Where("hosts.owner_id = ? AND hosts.team_id IS NULL", r.User.ID)
+	}
+
+	var result []models.HostTag
+	return &result, query.Find(&result).Error
 }

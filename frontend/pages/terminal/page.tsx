@@ -8,7 +8,7 @@ import Drawer from "expo-router/drawer";
 import { router } from "expo-router";
 import Icons from "@/components/ui/icons";
 import { useDebounceCallback } from "@/hooks/useDebounce";
-import NewSessionPage from "./new-session-page";
+import HostList from "../hosts/components/host-list";
 
 const TerminalPage = () => {
   const pagerViewRef = useRef<PagerViewRef>(null!);
@@ -58,7 +58,11 @@ const TerminalPage = () => {
       />
 
       {sessions.length > 0 && media.gtSm ? <SessionTabs /> : null}
-      {!sessions.length ? <NewSessionPage /> : pagerView}
+      {!sessions.length ? (
+        <HostList allowEdit={false} parentId="none" hideGroups />
+      ) : (
+        pagerView
+      )}
     </>
   );
 };

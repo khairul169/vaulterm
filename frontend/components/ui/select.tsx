@@ -46,7 +46,7 @@ const Select = forwardRef<SelectRef, SelectProps>(
           <Sheet native modal dismissOnSnapToBottom snapPoints={[40, 60, 80]}>
             <Sheet.Overlay
               opacity={0.1}
-              animation="quick"
+              animation="quickest"
               enterStyle={{ opacity: 0 }}
               exitStyle={{ opacity: 0 }}
               zIndex={0}

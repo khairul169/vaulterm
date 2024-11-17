@@ -14,6 +14,7 @@ const groupSchema = baseFormSchema.merge(
 
 const hostSchema = baseFormSchema.merge(
   z.object({
+    tags: z.string().array(),
     host: hostnameShape(),
     port: z.coerce
       .number({ message: "Invalid port" })
@@ -65,6 +66,7 @@ export type FormSchema = z.infer<typeof formSchema>;
 export const initialValues: FormSchema = {
   type: "ssh",
   host: "",
+  tags: [],
   port: 22,
   label: "",
   keyId: "",

@@ -28,6 +28,7 @@ type Host struct {
 	Port     int               `json:"port" gorm:"type:smallint"`
 	OS       string            `json:"os" gorm:"type:varchar(32)"`
 	Metadata datatypes.JSONMap `json:"metadata"`
+	Tags     []*HostTag        `json:"tags" gorm:"foreignKey:HostID"`
 
 	ParentID *string  `json:"parentId" gorm:"type:varchar(26)"`
 	Parent   *Host    `json:"parent" gorm:"foreignKey:ParentID"`
@@ -38,6 +39,12 @@ type Host struct {
 
 	Timestamps
 	SoftDeletes
+}
+
+type HostTag struct {
+	HostID string `gorm:"primarykey;type:varchar(26)" json:"-"`
+	Host   *Host  `gorm:"foreignKey:HostID;references:ID" json:"-"`
+	Name   string `gorm:"primarykey;type:varchar(64)" json:"name"`
 }
 
 type HostDecrypted struct {

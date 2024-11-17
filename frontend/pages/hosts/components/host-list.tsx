@@ -14,6 +14,7 @@ type HostsListProps = {
   onParentIdChange?: (id: string | null) => void;
   selected?: string[];
   onSelectedChange?: (ids: string[]) => void;
+  hideGroups?: boolean;
 };
 
 const HostList = ({
@@ -22,12 +23,15 @@ const HostList = ({
   onParentIdChange,
   selected = [],
   onSelectedChange,
+  hideGroups = false,
 }: HostsListProps) => {
   const openSession = useTermSession((i) => i.push);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useHosts({ parentId });
+  const { data, isLoading } = useHosts({
+    parentId: !search.length ? parentId : "none",
+  });
 
   const hostsList = useMemo(() => {
     let items = data || [];
@@ -37,7 +41,8 @@ const HostList = ({
         const q = search.toLowerCase();
         return (
           item.label.toLowerCase().includes(q) ||
-          item.host.toLowerCase().includes(q)
+          item.host.toLowerCase().includes(q) ||
+          item.tags.find((i: any) => i.name.toLowerCase().includes(q)) != null
         );
       });
     }
@@ -65,7 +70,8 @@ const HostList = ({
 
   const onEdit = (host: any) => {
     if (!allowEdit) return;
-    hostFormModal.onOpen(host);
+    const data = { ...host, tags: host.tags?.map((i: any) => i.name) };
+    hostFormModal.onOpen(data);
   };
 
   const onOpenTerminal = (host: any) => {
@@ -103,7 +109,7 @@ const HostList = ({
         </View>
       ) : (
         <ScrollView>
-          {groups.length > 0 && (
+          {groups.length > 0 && !hideGroups && (
             <>
               <Text mx="$4">Groups</Text>
               <ItemList
