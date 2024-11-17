@@ -27,8 +27,9 @@ const api = ofetch.create({
       throw new Error("Unauthorized");
     }
 
-    if (error.response._data) {
-      const message = error.response._data.message;
+    const data = error.response._data;
+    if (data) {
+      const message = typeof data === "string" ? data : data?.message;
       throw new Error(message || "Something went wrong");
     }
   },

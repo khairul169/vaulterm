@@ -16,11 +16,8 @@ func Router(app *fiber.App) {
 	router.Post("/register", register)
 	router.Post("/logout", middleware.Protected(), logout)
 
-	oauth := router.Group("/oauth")
-	oauth.Get("/github", githubRedir)
-	oauth.Get("/github/callback", githubCallback)
-	oauth.Get("/gitlab", gitlabRedir)
-	oauth.Get("/gitlab/callback", gitlabCallback)
+	router.Post("/github", githubCallback)
+	router.Post("/gitlab", gitlabCallback)
 }
 
 func login(c *fiber.Ctx) error {

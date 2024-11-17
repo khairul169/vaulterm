@@ -45,13 +45,16 @@ export const useRegisterMutation = () => {
 
 export const useOAuthCallback = (type: string) => {
   return useMutation({
-    mutationFn: async (params: { code: string; verifier?: string }) => {
-      const res = await api(`/auth/oauth/${type}/callback`, { params });
+    mutationFn: async (body: { code: string; verifier?: string }) => {
+      const res = await api(`/auth/${type}`, { body, method: "POST" });
       const { data } = loginResultSchema.safeParse(res);
       if (!data) {
         throw new Error("Invalid response!");
       }
       return data;
+    },
+    onError: (err) => {
+      console.log(err);
     },
     onSuccess(data) {
       authStore.setState({ token: data.sessionId });

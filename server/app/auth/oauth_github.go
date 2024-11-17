@@ -27,28 +27,26 @@ func getGithubConfig() *oauth2.Config {
 		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
 		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
 		Endpoint:     github.Endpoint,
-		// RedirectURL:  "http://localhost:3000/auth/oauth/github/callback",
-		RedirectURL: "http://localhost:8081",
-		Scopes:      []string{"read:user"},
+		RedirectURL:  "vaulterm://auth/login",
+		Scopes:       []string{"read:user"},
 	}
 	return githubCfg
 }
 
-func githubRedir(c *fiber.Ctx) error {
-	// Redirect to GitHub login page
-	url := getGithubConfig().AuthCodeURL("state", oauth2.AccessTypeOffline)
-	return c.Redirect(url)
-}
-
 func githubCallback(c *fiber.Ctx) error {
-	code := c.Query("code")
-	if code == "" {
+	var body struct {
+		Code string `json:"code"`
+	}
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Failed to parse request body")
+	}
+	if body.Code == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("Missing code")
 	}
 
 	// Exchange code for a token
 	cfg := getGithubConfig()
-	token, err := cfg.Exchange(c.Context(), code)
+	token, err := cfg.Exchange(c.Context(), body.Code)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Failed to exchange token")
 	}
@@ -61,10 +59,10 @@ func githubCallback(c *fiber.Ctx) error {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	data, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		return c.Status(fiber.StatusInternalServerError).
-			SendString(fmt.Sprintf("GitHub API error: %s", string(body)))
+			SendString(fmt.Sprintf("GitHub API error: %s", string(data)))
 	}
 
 	// Parse user info
@@ -76,7 +74,7 @@ func githubCallback(c *fiber.Ctx) error {
 		Email     string `json:"email"`
 	}
 
-	if err := json.Unmarshal(body, &user); err != nil {
+	if err := json.Unmarshal(data, &user); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Failed to parse user info")
 	}
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo } from "react";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import appConfig from "@/app.json";
 import { Button } from "tamagui";
 import { useOAuthCallback } from "../hooks";
 import { useServerConfig } from "@/hooks/useServerConfig";
+import { scheme } from "@/app.json";
 
 const LoginGithubButton = () => {
   const { data: clientId } = useServerConfig("github_client_id");
@@ -20,7 +20,7 @@ const LoginGithubButton = () => {
     {
       clientId: clientId,
       scopes: ["identity"],
-      redirectUri: makeRedirectUri({ scheme: appConfig.scheme }),
+      redirectUri: makeRedirectUri({ scheme, path: "auth/login" }),
     },
     discovery
   );
@@ -28,7 +28,7 @@ const LoginGithubButton = () => {
   useEffect(() => {
     if (response?.type === "success") {
       const { code } = response.params;
-      oauth.mutate(code);
+      oauth.mutate({ code });
     }
   }, [response]);
 

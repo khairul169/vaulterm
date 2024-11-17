@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo } from "react";
-import { useAuthRequest } from "expo-auth-session";
+import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { Button } from "tamagui";
 import { useOAuthCallback } from "../hooks";
 import { useServerConfig } from "@/hooks/useServerConfig";
+import { scheme } from "@/app.json";
 
 const LoginGitlabButton = () => {
   const { data: clientId } = useServerConfig("gitlab_client_id");
@@ -19,8 +20,7 @@ const LoginGitlabButton = () => {
     {
       clientId,
       scopes: ["read_user"],
-      // redirectUri: makeRedirectUri({ scheme: appConfig.scheme }),
-      redirectUri: "http://localhost:8081",
+      redirectUri: makeRedirectUri({ scheme, path: "auth/login" }),
     },
     discovery
   );
