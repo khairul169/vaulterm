@@ -10,16 +10,9 @@ type HostItemProps = {
   selected?: boolean;
   onMultiTap: () => void;
   onTap?: () => void;
-  onEdit?: (() => void) | null;
 };
 
-const HostItem = ({
-  host,
-  selected,
-  onMultiTap,
-  onTap,
-  onEdit,
-}: HostItemProps) => {
+const HostItem = ({ host, selected, onMultiTap, onTap }: HostItemProps) => {
   return (
     <MultiTapPressable
       cursor="pointer"
@@ -64,23 +57,6 @@ const HostItem = ({
               {host.host}
             </Text>
           </View>
-
-          {onEdit != null && (
-            <Button
-              circular
-              opacity={0}
-              $sm={{ opacity: 1 }}
-              $group-hover={{ opacity: 1 }}
-              animation="quick"
-              animateOnly={["opacity"]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onEdit();
-              }}
-            >
-              <Icons name="pencil" size={16} />
-            </Button>
-          )}
         </XStack>
       </Card>
     </MultiTapPressable>

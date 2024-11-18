@@ -7,6 +7,7 @@ import { hostFormModal } from "./form";
 import { GridLayout } from "@/components/ui/grid-view";
 import HostItem from "./host-item";
 import { useHosts } from "../hooks/query";
+import HostActions from "./host-actions";
 
 type HostsListProps = {
   allowEdit?: boolean;
@@ -115,7 +116,7 @@ const HostList = ({
               <ItemList
                 data={groups}
                 selected={selected}
-                onTap={onSelectedChange ? onSelect : undefined}
+                onTap={selected.length > 0 ? onSelect : undefined}
                 onMultiTap={(group) => onParentIdChange?.(group.id)}
                 onEdit={allowEdit ? onEdit : undefined}
               />
@@ -132,9 +133,10 @@ const HostList = ({
           <ItemList
             data={hosts}
             selected={selected}
-            onTap={onSelectedChange ? onSelect : undefined}
+            onTap={selected.length > 0 ? onSelect : undefined}
             onMultiTap={onOpenTerminal}
             onEdit={allowEdit ? onEdit : undefined}
+            onSelect={onSelectedChange ? onSelect : undefined}
           />
         </ScrollView>
       )}
@@ -148,6 +150,7 @@ type ItemListProps = {
   onTap?: (host: any) => void;
   onMultiTap?: (host: any) => void;
   onEdit?: (host: any) => void;
+  onSelect?: (host: any) => void;
 };
 
 const ItemList = ({
@@ -156,6 +159,7 @@ const ItemList = ({
   onTap,
   onMultiTap,
   onEdit,
+  onSelect,
 }: ItemListProps) => (
   <GridLayout
     data={data}
@@ -163,13 +167,21 @@ const ItemList = ({
     padding="$2"
     gap="$2.5"
     renderItem={(host: any) => (
-      <HostItem
-        host={host}
-        selected={selected?.includes(host.id)}
-        onTap={onEdit ? () => onTap?.(host) : undefined}
-        onMultiTap={() => onMultiTap?.(host)}
-        onEdit={onEdit ? () => onEdit?.(host) : undefined}
-      />
+      <View position="relative" h="100%">
+        <HostItem
+          host={host}
+          selected={selected?.includes(host.id)}
+          onTap={() => onTap?.(host)}
+          onMultiTap={() => onMultiTap?.(host)}
+        />
+        <HostActions
+          position="absolute"
+          top="$2"
+          right="$2"
+          onSelect={onSelect ? () => onSelect?.(host) : undefined}
+          onEdit={onEdit ? () => onEdit?.(host) : undefined}
+        />
+      </View>
     )}
   />
 );
