@@ -4,7 +4,7 @@ import { SelectField } from "@/components/ui/select";
 import { useZForm } from "@/hooks/useZForm";
 import { createDisclosure } from "@/lib/utils";
 import React from "react";
-import { ScrollView, Sheet, XStack } from "tamagui";
+import { ScrollView, XStack } from "tamagui";
 import { FormSchema, formSchema, typeOptions } from "../schema/form";
 import { InputField } from "@/components/ui/input";
 import FormField from "@/components/ui/form";
@@ -45,9 +45,7 @@ const KeyForm = () => {
     >
       <ErrorAlert mx="$4" mb="$4" error={saveMutation.error} />
 
-      <Sheet.ScrollView
-        contentContainerStyle={{ padding: "$4", pt: 0, gap: "$4" }}
-      >
+      <ScrollView contentContainerStyle={{ padding: "$4", pt: 0, gap: "$4" }}>
         <FormField label="Label">
           <InputField f={1} form={form} name="label" placeholder="Label..." />
         </FormField>
@@ -65,7 +63,7 @@ const KeyForm = () => {
         ) : type === "cert" ? (
           <CertTypeInputFields form={form} />
         ) : null}
-      </Sheet.ScrollView>
+      </ScrollView>
 
       <XStack p="$4" gap="$4">
         <Button flex={1} onPress={keyFormModal.onClose} bg="$colorTransparent">
